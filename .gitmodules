@@ -1,0 +1,3 @@
+[submodule "Assets/Plugins/Innoveam-Framework"]
+	path = Assets/Plugins/Innoveam-Framework
+	url = git@github.com:innoveam-id/Innoveam-Framework.git
