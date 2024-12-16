@@ -1,0 +1,114 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a778ac7f490b0cd4fb4abbc28f481cfc, type: 3}
+  m_Name: SceneManagerSettings
+  m_EditorClassIdentifier: 
+  shown: 0
+  profile: {fileID: 0}
+  tempObj: []
+  self: {fileID: 0}
+  scenes:
+  - asset: {fileID: 102900000, guid: a5f7a56d339da84449899ecf95fbe33d, type: 3}
+    name: DOTweenAnimation_Advanced
+    path: Assets/Plugins/Innoveam-Framework/Addons/Demigiant/DOTweenPro Examples/DOTweenAnimation_Advanced.unity
+    active: 0
+    buildIndex: -1
+  - asset: {fileID: 102900000, guid: 6a2ad353325ffe64983c28d69a8738f5, type: 3}
+    name: DOTweenAnimation_Basics
+    path: Assets/Plugins/Innoveam-Framework/Addons/Demigiant/DOTweenPro Examples/DOTweenAnimation_Basics.unity
+    active: 0
+    buildIndex: -1
+  - asset: {fileID: 102900000, guid: a351b59ca54a0bc4083c35844da13a61, type: 3}
+    name: DOTweenPath
+    path: Assets/Plugins/Innoveam-Framework/Addons/Demigiant/DOTweenPro Examples/DOTweenPath.unity
+    active: 0
+    buildIndex: -1
+  - asset: {fileID: 102900000, guid: 9fc0d4010bbf28b4594072e72b8655ab, type: 3}
+    name: SampleScene
+    path: Assets/Scenes/SampleScene.unity
+    active: 0
+    buildIndex: -1
+  - asset: {fileID: 102900000, guid: 92316c07969d01648afe273bf641301a, type: 3}
+    name: Pesona 2
+    path: Assets/SerializableCommand/Example/RPG/Pesona 2.unity
+    active: 0
+    buildIndex: -1
+  sceneGroup: {fileID: 0}
+  mode: 0
+  buttonstyle:
+    m_Name: 
+    m_Normal:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds: []
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_Hover:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds: []
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_Active:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds: []
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_Focused:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds: []
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_OnNormal:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds: []
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_OnHover:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds: []
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_OnActive:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds: []
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_OnFocused:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds: []
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_Border:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    m_Margin:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    m_Padding:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    m_Overflow:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    m_Font: {fileID: 0}
+    m_FontSize: 0
+    m_FontStyle: 0
+    m_Alignment: 0
+    m_WordWrap: 0
+    m_RichText: 1
+    m_TextClipping: 0
+    m_ImagePosition: 0
+    m_ContentOffset: {x: 0, y: 0}
+    m_FixedWidth: 0
+    m_FixedHeight: 0
+    m_StretchWidth: 1
+    m_StretchHeight: 0
+  playedScenes: []

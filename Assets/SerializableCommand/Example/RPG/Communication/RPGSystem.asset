@@ -1,0 +1,139 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5eec07704b06a16419e72ddbd176b5ff, type: 3}
+  m_Name: RPGSystem
+  m_EditorClassIdentifier: 
+  channelIDs:
+  - rid: 4118658507790352385
+  - rid: 4118658525112827904
+  - rid: 4118658525112827906
+  - rid: 4118658525112827907
+  - rid: 4118658774826745856
+  - rid: 4118658774826745858
+  - rid: 4118658774826745859
+  - rid: 4118658774826745860
+  - rid: 4118658774826745861
+  - rid: 4118658774826745862
+  - rid: 4118658774826745864
+  groups:
+  - rid: 4118658507790352384
+  - rid: 4118658774826745857
+  - rid: 4118658774826745863
+  references:
+    version: 2
+    RefIds:
+    - rid: 4118658507790352384
+      type: {class: CommunicationChannel/ChannelGroup, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
+      data:
+        name: BattleSession
+        member:
+        - rid: 4118658507790352385
+        - rid: 4118658525112827904
+        - rid: 4118658525112827906
+        - rid: 4118658525112827907
+        - rid: 4118658774826745856
+        shownInInspector: 1
+    - rid: 4118658507790352385
+      type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
+      data:
+        name: CharacterQueueUpdated
+        defaultParameter: 0
+        group:
+          rid: 4118658507790352384
+    - rid: 4118658525112827904
+      type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
+      data:
+        name: ActiveCharacterUpdated
+        defaultParameter: 0
+        group:
+          rid: 4118658507790352384
+    - rid: 4118658525112827906
+      type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
+      data:
+        name: ActiveCharacterObjectUpdated
+        defaultParameter: 0
+        group:
+          rid: 4118658507790352384
+    - rid: 4118658525112827907
+      type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
+      data:
+        name: NextCharacter
+        defaultParameter: 0
+        group:
+          rid: 4118658507790352384
+    - rid: 4118658774826745856
+      type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
+      data:
+        name: EnemyUpdated
+        defaultParameter: 0
+        group:
+          rid: 4118658507790352384
+    - rid: 4118658774826745857
+      type: {class: CommunicationChannel/ChannelGroup, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
+      data:
+        name: CommandBuilder
+        member:
+        - rid: 4118658774826745858
+        - rid: 4118658774826745859
+        - rid: 4118658774826745860
+        - rid: 4118658774826745861
+        - rid: 4118658774826745862
+        shownInInspector: 1
+    - rid: 4118658774826745858
+      type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
+      data:
+        name: ActiveCharacterChanged
+        defaultParameter: 3
+        group:
+          rid: 4118658774826745857
+    - rid: 4118658774826745859
+      type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
+      data:
+        name: CommandSelected
+        defaultParameter: 0
+        group:
+          rid: 4118658774826745857
+    - rid: 4118658774826745860
+      type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
+      data:
+        name: TargetsSelected
+        defaultParameter: 0
+        group:
+          rid: 4118658774826745857
+    - rid: 4118658774826745861
+      type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
+      data:
+        name: CreateCommand
+        defaultParameter: 0
+        group:
+          rid: 4118658774826745857
+    - rid: 4118658774826745862
+      type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
+      data:
+        name: SendCommand
+        defaultParameter: 0
+        group:
+          rid: 4118658774826745857
+    - rid: 4118658774826745863
+      type: {class: CommunicationChannel/ChannelGroup, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
+      data:
+        name: CommandExecution
+        member:
+        - rid: 4118658774826745864
+        shownInInspector: 1
+    - rid: 4118658774826745864
+      type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
+      data:
+        name: CommandExecuted
+        defaultParameter: 0
+        group:
+          rid: 4118658774826745863

@@ -2,7 +2,7 @@ using UnityEngine;
 
 public static class CommandFactory
 {
-    public static ICommand CreateCommand(CommandData data)
+    public static CommandBase CreateCommand(CommandData data)
     {
         switch (data.CommandType)
         {

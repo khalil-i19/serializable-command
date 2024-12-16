@@ -3,18 +3,27 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface ICommand
-{
-    IEnumerator Execute();
-    IEnumerator Undo();
-    CommandData Serialize();
-}
+//public interface CommandBase
+//{
+//    IEnumerator Execute();
+//    IEnumerator Undo();
+//    CommandData Serialize();
+//}
 
-public abstract class CommandBase : ICommand
+public abstract class CommandBase
 {
-    public abstract IEnumerator Execute();
+    //public CommandData commandData;
+
+    public virtual IEnumerator Execute()
+    {
+        yield break;
+    }
 
     public abstract IEnumerator Undo();
 
-    public abstract CommandData Serialize();
+    public abstract void Deserialize(CommandData commandData);
+    public virtual string Serialize()
+    {
+        return JsonUtility.ToJson(this);
+    }
 }

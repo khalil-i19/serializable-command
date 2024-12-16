@@ -1,13 +1,14 @@
+using SimpleJSON;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class CommandManager : MonoBehaviour
+public abstract class CommandManager : MonoBehaviour
 {
-    private List<ICommand> _commands = new List<ICommand>();
+    private List<CommandBase> _commands = new List<CommandBase>();
 
-    public void AddCommand(ICommand command)
+    public void AddCommand(CommandBase command)
     {
         _commands.Add(command);
     }
@@ -22,10 +23,14 @@ public class CommandManager : MonoBehaviour
 
     public string SerializeToJson()
     {
-        List<CommandData> serializedCommands = _commands
-            .Select(cmd => cmd.Serialize())
-            .ToList();
-        return JsonUtility.ToJson(new CommandWrapper { Commands = serializedCommands });
+        //List<CommandData> serializedCommands = _commands
+        //    .Select(cmd => cmd.Serialize())
+        //    .ToList();
+
+        //var data = new CommandWrapper() { Commands = serializedCommands };
+
+        //return JsonUtility.ToJson(data, true);
+        return JsonUtility.ToJson(string.Empty, true);
     }
 
     public void DeserializeFromJson(string json)
@@ -35,7 +40,7 @@ public class CommandManager : MonoBehaviour
 
         foreach (var data in deserialized.Commands)
         {
-            ICommand command = CommandFactory.CreateCommand(data);
+            CommandBase command = CommandFactory.CreateCommand(data);
             if (command != null)
             {
                 _commands.Add(command);
