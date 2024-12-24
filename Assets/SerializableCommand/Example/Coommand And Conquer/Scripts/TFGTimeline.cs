@@ -10,7 +10,8 @@ using UnityEngine.Timeline;
 public class TFGTimeline : MonoBehaviour
 {
     [Header("Attention")]
-    [Label("This script should only run in runtime/ Play mode")]
+    [Header("This script should only run in runtime/ Play mode")]
+    [Space(8f)]
 
     [SerializeField] PlayableDirector playableDirector;
     [SerializeField] TFGSession session;

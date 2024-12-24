@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Splines;
 
 [System.Serializable]
 public class TFGActionRecord
@@ -89,6 +90,7 @@ public class TFGSession : MonoBehaviour
 
     [Header("Receivers")]
     [SerializeField] CommunicationHandler<TFGCharacter> OnCurrentCharacterUpdated;
+    //[SerializeField] CommunicationHandler<(GameObject, Spline)> OnMoveCharacter;
 
     Dictionary<string, ScriptGraphAsset> scriptGraphAssets = new();
     Dictionary<string, TFGCharacter> characters = new();

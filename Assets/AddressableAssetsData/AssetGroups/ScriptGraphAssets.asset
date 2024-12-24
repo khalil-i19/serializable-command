@@ -65,6 +65,18 @@ MonoBehaviour:
     m_SerializedLabels:
     - enemy-commands
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 15784940baee657468b845c6ab3fc076
+    m_Address: Assets/SerializableCommand/Example/Coommand And Conquer/VisualScripts/Templates/BroadcastPositionUpdate.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d0c8303c4bcf05d459f1f4115779e567
+    m_Address: Assets/SerializableCommand/Example/Coommand And Conquer/VisualScripts/FreestyleMovement.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - player-commands
+    - enemy-commands
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 28d3940a8e855a741b32c47a8036105b, type: 2}
   m_SchemaSet:
