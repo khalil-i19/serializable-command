@@ -1,10 +1,15 @@
 using Innoveam;
+using Innoveam.Modules.Communication;
 using SimpleJSON;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Playables;
+using UnityEngine.SceneManagement;
+using UnityEngine.Splines;
 using UnityEngine.Timeline;
 
 public class TFGTimeline : MonoBehaviour
@@ -18,8 +23,22 @@ public class TFGTimeline : MonoBehaviour
 
     [SerializeField, TextArea] string jsonTest;
 
-    [ContextMenu("Import JSON")]
-    void ImportFromJSON() => ImportFromJSON(jsonTest);
+    [Header("Communications")]
+    [Header("Broadcasters")]
+    [SerializeField] CommunicationHandler OnDataLoaded;
+    [Header("Receivers")]
+    [SerializeField] CommunicationHandler<string> OnImportData;
+    [SerializeField] CommunicationHandler OnPlay;
+
+    public Action<PlayableDirector> OnTimelineStopped;
+
+    private void Start()
+    {
+        OnImportData.Register(this).OnReceiveSignal += ImportFromJSON;
+        OnPlay.Register(this).OnReceiveSignal += value => Play();
+
+        playableDirector.stopped += value => OnTimelineStopped?.Invoke(value);
+    }
 
     public void ImportFromJSON(string json)
     {
@@ -28,42 +47,41 @@ public class TFGTimeline : MonoBehaviour
         var sessionRecord = JSON.Parse(json);
 
         if (!DateTime.TryParse(sessionRecord["startTime"].Value, out DateTime startTime)) return;
+        if (!DateTime.TryParse(sessionRecord["endTime"].Value, out DateTime endTime)) return;
+
+        playableDirector.ClearAllBindings();
 
         CreateTimeline();
 
         //Initialization
-        Action initialAction = () =>
+
+        foreach (var initialTransformData in sessionRecord["initialCharacterTransforms"].Keys)
         {
-            foreach(var initialTransformData in sessionRecord["initialCharacterTransforms"].Keys)
-            {
-                var character = session.GetCharacter(initialTransformData);
-                var initialCharacterTransformData = sessionRecord["initialCharacterTransforms"][initialTransformData];
+            var character = session.GetCharacter(initialTransformData);
+            var initialCharacterTransformData = sessionRecord["initialCharacterTransforms"][initialTransformData];
 
-                Vector3 worldPos = new Vector3();
-                Vector3 worldRot = new Vector3();
+            Vector3 worldPos = new Vector3();
+            Vector3 worldRot = new Vector3();
 
-                var worldPositionData = initialCharacterTransformData["worldPosition"].Value;
-                worldPositionData = worldPositionData.GetBetween("(", ")");
+            var worldPositionData = initialCharacterTransformData["worldPosition"].Value;
+            worldPositionData = worldPositionData.GetBetween("(", ")");
 
-                var worldRotationData = initialCharacterTransformData["worldRotation"].Value;
-                worldRotationData = worldRotationData.GetBetween("(", ")");
+            var worldRotationData = initialCharacterTransformData["worldRotation"].Value;
+            worldRotationData = worldRotationData.GetBetween("(", ")");
 
-                var worldPositionValues = worldPositionData.Split(',');
-                worldPos.x = float.Parse(worldPositionValues[0]);
-                worldPos.y = float.Parse(worldPositionValues[1]);
-                worldPos.z = float.Parse(worldPositionValues[2]);
+            var worldPositionValues = worldPositionData.Split(',');
+            worldPos.x = float.Parse(worldPositionValues[0]);
+            worldPos.y = float.Parse(worldPositionValues[1]);
+            worldPos.z = float.Parse(worldPositionValues[2]);
 
-                var worldRotationValues = worldRotationData.Split(',');
-                worldRot.x = float.Parse(worldRotationValues[0]);
-                worldRot.y = float.Parse(worldRotationValues[1]);
-                worldRot.z = float.Parse(worldRotationValues[2]);
+            var worldRotationValues = worldRotationData.Split(',');
+            worldRot.x = float.Parse(worldRotationValues[0]);
+            worldRot.y = float.Parse(worldRotationValues[1]);
+            worldRot.z = float.Parse(worldRotationValues[2]);
 
-                character.transform.position = worldPos;
-                character.transform.rotation = Quaternion.Euler(worldRot);
-            }
-        };
-
-        AddAnimationTrack((TimelineAsset)playableDirector.playableAsset, null, "Initialization", 0f, initialAction);
+            character.transform.position = worldPos;
+            character.transform.rotation = Quaternion.Euler(worldRot);
+        }
 
         //Events
         int i = 1;
@@ -77,14 +95,21 @@ public class TFGTimeline : MonoBehaviour
             var sessionEventTime = DateTime.Parse(sessionEvent["time"].Value);
             var sessionEventRelativeTime = (sessionEventTime - startTime).TotalSeconds;
 
-            Debug.Log($"[TFGTimeline] {sessionEventRelativeTime}");
+            List<Vector3> knotsData = DeserializeKnotsData(sessionEvent["movementData"].Value);
 
-            Action action = () => character.RunCommand(scriptGraphAsset);
+            var duration = sessionEvent["traversalTime"].AsFloat;
 
-            AddAnimationTrack((TimelineAsset)playableDirector.playableAsset, character.gameObject, $"{i}. {characterId} {sessionEvent["action"].Value}", sessionEventRelativeTime, action);
+            AddSplineTrack((TimelineAsset)playableDirector.playableAsset, character.gameObject, scriptGraphAsset, $"{i}. {characterId} {sessionEvent["action"].Value}", sessionEventRelativeTime, duration, knotsData);
 
             i++;
         }
+
+        var playbackDuration = (endTime - startTime).TotalSeconds;
+        var timelineAsset = (TimelineAsset) playableDirector.playableAsset;
+        timelineAsset.durationMode = TimelineAsset.DurationMode.FixedLength;
+        timelineAsset.fixedDuration = playbackDuration;
+
+        OnDataLoaded.Broadcast();
     }
 
     [ContextMenu("Play")]
@@ -129,5 +154,53 @@ public class TFGTimeline : MonoBehaviour
 
         // Assign the custom PlayableAsset to the clip
         timelineClip.asset = customAction;
+    }
+
+    void AddSplineTrack(TimelineAsset timelineAsset, GameObject binding, ScriptGraphAsset scriptGraphAsset, string name, double startTime, float duration, List<Vector3> knotsData)
+    {
+        VisualScriptTrackAsset animationTrack = timelineAsset.CreateTrack<VisualScriptTrackAsset>(null, "Action Track");
+
+        TimelineClip timelineClip = animationTrack.CreateDefaultClip();
+
+        VisualScriptPlayableAsset visualScriptPlayableAsset = ScriptableObject.CreateInstance<VisualScriptPlayableAsset>();
+
+        List<BezierKnot> generatedKnotsData = new List<BezierKnot>();
+
+        playableDirector.SetGenericBinding(animationTrack, binding.GetComponent<ScriptMachine>());
+
+        float distance = knotsData.GetLength();
+        float walkSpeed = (float)Variables.Scene(SceneManager.GetActiveScene())["walkSpeed"];
+        //float duration = distance / (walkSpeed * 4f);
+
+        timelineClip.displayName = name;
+        timelineClip.start = startTime;
+        timelineClip.duration = duration;
+        timelineClip.asset = visualScriptPlayableAsset;
+
+        visualScriptPlayableAsset.bound = binding;
+        visualScriptPlayableAsset.knotsData = knotsData;
+        visualScriptPlayableAsset.scriptGraphAsset = scriptGraphAsset;
+        visualScriptPlayableAsset.splineLength = distance;
+    }
+
+    List<Vector3> DeserializeKnotsData(string JSONRaw)
+    {
+        List<Vector3> result = new();
+
+        var movementsData = JSON.Parse(JSONRaw).AsArray;
+
+        for (int i = 0; i < movementsData.Count; i++)
+        {
+            var movementData = movementsData[i].AsArray;
+
+            var vector3Data = new Vector3();
+            vector3Data.x = movementData[0].AsFloat;
+            vector3Data.y = movementData[1].AsFloat;
+            vector3Data.z = movementData[2].AsFloat;
+
+            result.Add(vector3Data);
+        }
+
+        return result;
     }
 }

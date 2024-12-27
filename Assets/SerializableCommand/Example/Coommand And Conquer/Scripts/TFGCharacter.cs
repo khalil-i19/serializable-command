@@ -36,6 +36,11 @@ public class TFGCharacter : MonoBehaviour, Innoveam.IInitializable
         scriptMachineUtility.SetAndStartScriptGraphAsset(scriptGraphAsset);
     }
 
+    public void ClearCommand()
+    {
+        scriptMachineUtility.SetScriptGraphAsset(null);
+    }
+
     public void LoadAddressableScriptGraphAssets(List<object> addressableScriptGraphAssets)
     {
         actionSet = new();

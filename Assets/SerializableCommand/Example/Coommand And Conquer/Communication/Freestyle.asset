@@ -1,0 +1,97 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5eec07704b06a16419e72ddbd176b5ff, type: 3}
+  m_Name: Freestyle
+  m_EditorClassIdentifier: 
+  channelIDs:
+  - rid: 4118658932373192722
+  - rid: 4118658932373192723
+  - rid: 4118658932373192724
+  - rid: 4118658932373192725
+  - rid: 4118658955034492929
+  - rid: 4118658955034492931
+  - rid: 4118658955034492932
+  groups:
+  - rid: 4118658932373192721
+  - rid: 4118658955034492930
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 4118658932373192721
+      type: {class: CommunicationChannel/ChannelGroup, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
+      data:
+        name: CursorInteraction
+        member:
+        - rid: 4118658932373192722
+        - rid: 4118658932373192723
+        - rid: 4118658932373192724
+        - rid: 4118658932373192725
+        shownInInspector: 1
+    - rid: 4118658932373192722
+      type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
+      data:
+        name: OnFreestyleStarted
+        defaultParameter: 0
+        group:
+          rid: 4118658932373192721
+    - rid: 4118658932373192723
+      type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
+      data:
+        name: OnFreestyleUpdated
+        defaultParameter: 0
+        group:
+          rid: 4118658932373192721
+    - rid: 4118658932373192724
+      type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
+      data:
+        name: OnFreestyleStopped
+        defaultParameter: 0
+        group:
+          rid: 4118658932373192721
+    - rid: 4118658932373192725
+      type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
+      data:
+        name: OnPointAdded
+        defaultParameter: 0
+        group:
+          rid: 4118658932373192721
+    - rid: 4118658955034492929
+      type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
+      data:
+        name: SetEnable
+        defaultParameter: 4
+        group:
+          rid: -2
+    - rid: 4118658955034492930
+      type: {class: CommunicationChannel/ChannelGroup, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
+      data:
+        name: ObjectInteraction
+        member:
+        - rid: 4118658955034492931
+        - rid: 4118658955034492932
+        shownInInspector: 1
+    - rid: 4118658955034492931
+      type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
+      data:
+        name: OnPointerExit
+        defaultParameter: 6
+        group:
+          rid: 4118658955034492930
+    - rid: 4118658955034492932
+      type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
+      data:
+        name: OnPointerEnter
+        defaultParameter: 0
+        group:
+          rid: 4118658955034492930

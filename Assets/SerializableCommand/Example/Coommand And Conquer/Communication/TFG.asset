@@ -15,9 +15,13 @@ MonoBehaviour:
   channelIDs:
   - rid: 4118658842506559489
   - rid: 4118658842506559491
+  - rid: 4118659006167777284
+  - rid: 4118659006167777285
+  - rid: 4118659006167777286
   groups:
   - rid: 4118658842506559488
   - rid: 4118658842506559490
+  - rid: 4118659006167777283
   references:
     version: 2
     RefIds:
@@ -49,3 +53,33 @@ MonoBehaviour:
         defaultParameter: 0
         group:
           rid: 4118658842506559490
+    - rid: 4118659006167777283
+      type: {class: CommunicationChannel/ChannelGroup, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
+      data:
+        name: Session
+        member:
+        - rid: 4118659006167777284
+        - rid: 4118659006167777285
+        - rid: 4118659006167777286
+        shownInInspector: 1
+    - rid: 4118659006167777284
+      type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
+      data:
+        name: OnImportData
+        defaultParameter: 0
+        group:
+          rid: 4118659006167777283
+    - rid: 4118659006167777285
+      type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
+      data:
+        name: OnPlayHistory
+        defaultParameter: 0
+        group:
+          rid: 4118659006167777283
+    - rid: 4118659006167777286
+      type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
+      data:
+        name: OnDataLoaded
+        defaultParameter: 0
+        group:
+          rid: 4118659006167777283

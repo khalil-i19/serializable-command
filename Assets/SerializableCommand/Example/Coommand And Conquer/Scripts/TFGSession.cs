@@ -1,4 +1,5 @@
 using Innoveam.Modules.Communication;
+using Innoveam.Modules.Data;
 using JetBrains.Annotations;
 using SimpleJSON;
 using System;
@@ -6,7 +7,9 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Splines;
+using ZXing;
 
 [System.Serializable]
 public class TFGActionRecord
@@ -14,6 +17,8 @@ public class TFGActionRecord
     public string time;
     public TFGCharacter character;
     public ScriptGraphAsset action;
+    public float traversalTime;
+    public List<Vector3> movementData;
 }
 
 [System.Serializable]
@@ -30,6 +35,7 @@ public class TFGSessionData
     public string name;
     public string description;
     public string startTime;
+    public string endTime;
     public List<TFGCharacterTransformData> initialCharacterTransforms = new();
     public List<TFGActionRecord> actionRecords = new();
 
@@ -67,8 +73,32 @@ public class TFGSessionData
             JSONNode.Add("time", actionRecord.time);
             JSONNode.Add("character", actionRecord.character.id);
             JSONNode.Add("action", actionRecord.action.name);
+            JSONNode.Add("traversalTime", actionRecord.traversalTime);
+            JSONNode.Add("movementData", SerializeMovementData(actionRecord.movementData));
 
             JSONArray.Add(JSONNode);
+        }
+
+        result = JSONArray.ToString();
+
+        return result;
+    }
+
+    public string SerializeMovementData(List<Vector3> movementDatas)
+    {
+        string result = string.Empty;
+
+        var JSONArray = new JSONArray();
+
+        foreach(var movementData in movementDatas)
+        {
+            var movementDataArray = new JSONArray();
+
+            movementDataArray.Add(Math.Round(movementData.x, 2, MidpointRounding.ToEven));
+            movementDataArray.Add(Math.Round(movementData.y, 2, MidpointRounding.ToEven));
+            movementDataArray.Add(Math.Round(movementData.z, 2, MidpointRounding.ToEven));
+
+            JSONArray.Add(movementDataArray);
         }
 
         result = JSONArray.ToString();
@@ -84,19 +114,21 @@ public class TFGSession : MonoBehaviour
     [SerializeField] List<ScriptGraphAsset> _scriptGraphAssets = new();
     [SerializeField] List<TFGCharacter> _characters = new();
 
+    [SerializeField] DatabaseObject sessionDataHistory;
+
     [Header("Communication")]
     [Header("Broadcasters")]
     [SerializeField] CommunicationHandler<ScriptMachine> OnActionExecuted;
 
     [Header("Receivers")]
     [SerializeField] CommunicationHandler<TFGCharacter> OnCurrentCharacterUpdated;
-    //[SerializeField] CommunicationHandler<(GameObject, Spline)> OnMoveCharacter;
 
     Dictionary<string, ScriptGraphAsset> scriptGraphAssets = new();
     Dictionary<string, TFGCharacter> characters = new();
 
     public Action OnSessionStart;
     public Action OnSessionStop;
+    public Action OnSessionSaved;
 
     int characterIndex = 0;
 
@@ -115,9 +147,6 @@ public class TFGSession : MonoBehaviour
 
         characters.Clear();
         foreach (var character in _characters) characters.Add(character.id, character);
-
-        //scriptGraphAssets.Clear();
-        //foreach (var scriptGraphAsset in _scriptGraphAssets) scriptGraphAssets.Add(scriptGraphAsset.name, scriptGraphAsset);
     }
 
     public TFGCharacter GetCharacter(string characterId) => characters[characterId];
@@ -128,6 +157,8 @@ public class TFGSession : MonoBehaviour
 
     public void StartSession(string sessionName)
     {
+        Variables.Scene(SceneManager.GetActiveScene())["replayMode"] = false;
+
         sessionData = new TFGSessionData() { name = sessionName, startTime = DateTime.Now.ToString() };
         foreach (var character in _characters)
         {
@@ -141,7 +172,6 @@ public class TFGSession : MonoBehaviour
 
         characterIndex = -1;
 
-
         NextCharacter();
 
         OnSessionStart?.Invoke();
@@ -150,6 +180,15 @@ public class TFGSession : MonoBehaviour
     [ContextMenu("Stop Session")]
     public void StopSession()
     {
+        sessionData.endTime = DateTime.Now.ToString();
+
+        Variables.Scene(SceneManager.GetActiveScene())["replayMode"] = true;
+
+        foreach(var character in _characters)
+        {
+            character.ClearCommand();
+        }
+
         OnSessionStop?.Invoke();
     }
 
@@ -185,14 +224,15 @@ public class TFGSession : MonoBehaviour
 
         //TODO: Convert sesuai timezone Indo
         var currentTime = DateTime.Now.ToString();
+        var speed = (float)Variables.Scene(SceneManager.GetActiveScene())["walkSpeed"];
 
         record.time = currentTime;
         record.character = scriptMachine.GetComponent<TFGCharacter>();
         record.action = scriptMachine.GetCurrentScriptGraphAsset();
+        record.movementData = (List<Vector3>)Variables.Object(scriptMachine)["splineData"];
+        record.traversalTime = record.movementData.GetLength() / speed;
 
         sessionData.actionRecords.Add(record);
-
-        NextCharacter();
     }
 
     public void GetRecord() => ExportRecordAsJSON();
@@ -205,6 +245,7 @@ public class TFGSession : MonoBehaviour
 
         JSONNode.Add("name", sessionData.name);
         JSONNode.Add("startTime", sessionData.startTime);
+        JSONNode.Add("endTime", sessionData.endTime);
 
         var initialJSON = JSON.Parse(sessionData.SerializeInitialCharacterTransforms());
         var recordJSON = JSON.Parse(sessionData.SerializeActionRecords());
@@ -214,7 +255,11 @@ public class TFGSession : MonoBehaviour
 
         result = JSONNode.ToString();
 
-        Debug.Log(result);
+        var historyData = sessionDataHistory.data.AddNewChild(sessionData.startTime);
+        historyData.type = DatabaseObject.DataType.String;
+        historyData.stringValue = result;
+
+        OnSessionSaved?.Invoke();
 
         return result;
     }
