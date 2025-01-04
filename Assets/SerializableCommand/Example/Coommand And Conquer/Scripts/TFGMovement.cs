@@ -1,10 +1,12 @@
 using Innoveam.Modules.Communication;
 using Innoveam.Templates;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Splines;
 
 public class TFGMovement : MonoBehaviour
@@ -13,13 +15,20 @@ public class TFGMovement : MonoBehaviour
     [SerializeField] SplineContainer splineContainer;
     [SerializeField] ScriptGraphAsset freestyleMovementAction;
 
-    [Header("Communication")]
+    [Header("Communications")]
     [Header("Broadcasters")]
-    [SerializeField] CommunicationHandler<(GameObject, Spline)> OnMoveCharacter;
+    [SerializeField] CommunicationHandler<TFGActionRecord> OnRecordAction;
+    //[Header("Receivers")]
+    //[SerializeField] CommunicationHandler<GameObject> OnValidPointsForTrackedGameObjectAvailable;
 
     Spline cachedSplineData;
 
-    public void PromptCharacterMovement(GameObject target)
+    private void Start()
+    {
+        //OnValidPointsForTrackedGameObjectAvailable.Register(this).OnReceiveSignal += Process;
+    }
+
+    public void Process(GameObject target)
     {
         PromptWindow.PromptContent promptContent = new PromptWindow.PromptContent();
 
@@ -35,7 +44,7 @@ public class TFGMovement : MonoBehaviour
         {
             var knotsData = new List<Vector3>();
 
-            foreach(var knot in cachedSplineData.Knots.Select(x => x.Position))
+            foreach (var knot in cachedSplineData.Knots.Select(x => x.Position))
             {
                 var knotItem = new Vector3(knot.x, knot.y, knot.z);
 
@@ -45,18 +54,22 @@ public class TFGMovement : MonoBehaviour
             var tfgCharacter = target.GetComponent<TFGCharacter>();
             if (tfgCharacter == null) return;
 
-            var variableContainer = target.GetComponent<Variables>();
-            if (variableContainer == null) return;
+            var speed = (float)Variables.Scene(SceneManager.GetActiveScene())["walkSpeed"];
 
-            Variables.Object(target)["splineData"] = knotsData;
-            Variables.Object(target)["distanceTraveled"] = 0f;
-            tfgCharacter.RunCommand(freestyleMovementAction);
+            var actionRecord = new TFGActionRecord();
+
+            actionRecord.action = freestyleMovementAction;
+            actionRecord.character = tfgCharacter;
+            actionRecord.movementData = knotsData;
+            actionRecord.duration = knotsData.GetLength() / speed;
+
+            OnRecordAction.Broadcast(actionRecord);
         };
         noEvent.callback = null;
 
         promptContent.title = string.Empty;
         promptContent.details = $"You will move \"{target.gameObject.name}\" to this position.\nDo you want to proceed?";
-        promptContent.options = new PromptWindow.PromptButtonEvent[] { noEvent, yesEvent };
+        promptContent.options = new PromptWindow.PromptButtonEvent[] { yesEvent, noEvent };
 
         PromptWindow.instance.Show(promptContent);
     }

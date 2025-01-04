@@ -18,6 +18,11 @@ MonoBehaviour:
   - rid: 4118659006167777284
   - rid: 4118659006167777285
   - rid: 4118659006167777286
+  - rid: 2227401722102808576
+  - rid: 2227401722102808578
+  - rid: 2227401722102808579
+  - rid: 2227401722102808581
+  - rid: 2227401722102808582
   groups:
   - rid: 4118658842506559488
   - rid: 4118658842506559490
@@ -25,6 +30,41 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: 2227401722102808576
+      type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
+      data:
+        name: Recorded
+        defaultParameter: 0
+        group:
+          rid: 4118658842506559490
+    - rid: 2227401722102808578
+      type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
+      data:
+        name: Start
+        defaultParameter: 0
+        group:
+          rid: 4118659006167777283
+    - rid: 2227401722102808579
+      type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
+      data:
+        name: Stop
+        defaultParameter: 0
+        group:
+          rid: 4118659006167777283
+    - rid: 2227401722102808581
+      type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
+      data:
+        name: Duration
+        defaultParameter: 0
+        group:
+          rid: 4118659006167777283
+    - rid: 2227401722102808582
+      type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
+      data:
+        name: DurationNormalized
+        defaultParameter: 0
+        group:
+          rid: 4118659006167777283
     - rid: 4118658842506559488
       type: {class: CommunicationChannel/ChannelGroup, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
       data:
@@ -45,11 +85,12 @@ MonoBehaviour:
         name: Command
         member:
         - rid: 4118658842506559491
+        - rid: 2227401722102808576
         shownInInspector: 1
     - rid: 4118658842506559491
       type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
       data:
-        name: CommandInvoked
+        name: Record
         defaultParameter: 0
         group:
           rid: 4118658842506559490
@@ -61,6 +102,10 @@ MonoBehaviour:
         - rid: 4118659006167777284
         - rid: 4118659006167777285
         - rid: 4118659006167777286
+        - rid: 2227401722102808578
+        - rid: 2227401722102808579
+        - rid: 2227401722102808581
+        - rid: 2227401722102808582
         shownInInspector: 1
     - rid: 4118659006167777284
       type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}

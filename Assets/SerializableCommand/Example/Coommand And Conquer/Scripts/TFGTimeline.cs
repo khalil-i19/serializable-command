@@ -26,20 +26,155 @@ public class TFGTimeline : MonoBehaviour
     [Header("Communications")]
     [Header("Broadcasters")]
     [SerializeField] CommunicationHandler OnDataLoaded;
+    [SerializeField] CommunicationHandler<float> OnTimeChangedNormalized;
     [Header("Receivers")]
+    [SerializeField] CommunicationHandler OnSessionStart;
+    [SerializeField] CommunicationHandler OnSessionStop;
+    [SerializeField] CommunicationHandler<TFGActionRecord> OnActionRecorded;
     [SerializeField] CommunicationHandler<string> OnImportData;
     [SerializeField] CommunicationHandler OnPlay;
 
     public Action<PlayableDirector> OnTimelineStopped;
 
+    double lastTime = -1;
+
+    #region METHODS
+
     private void Start()
     {
+        OnSessionStart.Register(this).OnReceiveSignal += value => CreateTimeline();
+        OnActionRecorded.Register(this).OnReceiveSignal += Append;
         OnImportData.Register(this).OnReceiveSignal += ImportFromJSON;
         OnPlay.Register(this).OnReceiveSignal += value => Play();
-
-        playableDirector.stopped += value => OnTimelineStopped?.Invoke(value);
     }
 
+    #region PLAYBACK
+
+    [ContextMenu("Play")]
+    public void Play()
+    {
+        playableDirector.Play();
+    }
+
+    [ContextMenu("Pause")]
+
+    public void Pause()
+    {
+        playableDirector.Pause();
+    }
+
+    public void SetTime(float seconds)
+    {
+        playableDirector.Pause();
+        playableDirector.time = seconds;
+        playableDirector.Evaluate();
+    }
+
+    public void SetTime01(float interpolant)
+    {
+        float time = Mathf.Lerp(0f, interpolant, (float)playableDirector.duration);
+        SetTime(time);
+
+    }
+
+    private void Update()
+    {
+        if(lastTime != playableDirector.time)
+        {
+            lastTime = playableDirector.time;
+
+            var durationInterpolant = Mathf.InverseLerp(0, (float)playableDirector.duration, (float)lastTime);
+
+            OnTimeChangedNormalized.Broadcast(durationInterpolant);
+        }
+    }
+    #endregion
+
+    #region MODIFICATION
+    public void CreateTimeline()
+    {
+        if (playableDirector == null) return;
+
+        if (playableDirector.playableAsset != null)
+        {
+            Destroy(playableDirector.playableAsset);
+        }
+
+        TimelineAsset timelineAsset = ScriptableObject.CreateInstance<TimelineAsset>();
+
+        playableDirector.playableAsset = timelineAsset;
+    }
+
+    void Append(TFGActionRecord data)
+    {
+        //var sessionEventTime = DateTime.Parse(data.time);
+        var character = data.character;
+        var scriptGraphAsset = data.action;
+        var duration = data.duration;// sessionEvent["traversalTime"].AsFloat;
+        var knotsData = data.movementData;
+
+        var characterId = character.id;
+
+        //var sessionEventRelativeTime = (sessionEventTime - startTime).TotalSeconds;
+        var sessionEventRelativeTime = playableDirector.time;
+
+        AddSplineTrack((TimelineAsset)playableDirector.playableAsset, character.gameObject, scriptGraphAsset, $"{characterId} {scriptGraphAsset.name}", sessionEventRelativeTime, duration, knotsData);
+        
+        playableDirector.RebuildGraph();
+    }
+
+    void AddAnimationTrack(TimelineAsset timelineAsset, GameObject targetObject, string name, double startTime, Action action)
+    {
+        // Create an Animation Track
+        AnimationTrack animationTrack = timelineAsset.CreateTrack<AnimationTrack>(null, "Action Track");
+
+        // Bind the track to the target GameObject
+        playableDirector.SetGenericBinding(animationTrack, targetObject);
+
+        // Create an empty Timeline Clip (placeholder for time)
+        TimelineClip timelineClip = animationTrack.CreateDefaultClip();
+
+        // Set the clip's duration (customize as needed)
+        timelineClip.start = startTime;
+        timelineClip.duration = 1.0f;
+        timelineClip.displayName = name;
+
+        // Create a custom PlayableAsset to execute the Action
+        ActionPlayableAsset customAction = ScriptableObject.CreateInstance<ActionPlayableAsset>();
+        customAction.action = action;
+
+        // Assign the custom PlayableAsset to the clip
+        timelineClip.asset = customAction;
+    }
+
+    void AddSplineTrack(TimelineAsset timelineAsset, GameObject binding, ScriptGraphAsset scriptGraphAsset, string name, double startTime, float duration, List<Vector3> knotsData)
+    {
+        VisualScriptTrackAsset animationTrack = timelineAsset.FirstOrNew<VisualScriptTrackAsset>(binding.name);
+
+        TimelineClip timelineClip = animationTrack.CreateDefaultClip();
+
+        VisualScriptPlayableAsset visualScriptPlayableAsset = ScriptableObject.CreateInstance<VisualScriptPlayableAsset>();
+
+        List<BezierKnot> generatedKnotsData = new List<BezierKnot>();
+
+        playableDirector.SetGenericBinding(animationTrack, binding.GetComponent<ScriptMachine>());
+
+        float distance = knotsData.GetLength();
+        float walkSpeed = (float)Variables.Scene(SceneManager.GetActiveScene())["walkSpeed"];
+
+        timelineClip.displayName = name;
+        timelineClip.start = startTime;
+        timelineClip.duration = duration;
+        timelineClip.asset = visualScriptPlayableAsset;
+
+        visualScriptPlayableAsset.bound = binding;
+        visualScriptPlayableAsset.knotsData = knotsData;
+        visualScriptPlayableAsset.scriptGraphAsset = scriptGraphAsset;
+        visualScriptPlayableAsset.splineLength = distance;
+    }
+    #endregion
+
+    #region JSON
     public void ImportFromJSON(string json)
     {
         if (string.IsNullOrEmpty(json)) return;
@@ -105,83 +240,13 @@ public class TFGTimeline : MonoBehaviour
         }
 
         var playbackDuration = (endTime - startTime).TotalSeconds;
-        var timelineAsset = (TimelineAsset) playableDirector.playableAsset;
+        var timelineAsset = (TimelineAsset)playableDirector.playableAsset;
         timelineAsset.durationMode = TimelineAsset.DurationMode.FixedLength;
         timelineAsset.fixedDuration = playbackDuration;
 
         OnDataLoaded.Broadcast();
     }
-
-    [ContextMenu("Play")]
-    public void Play()
-    {
-        playableDirector.Play();
-    }
-
-    void CreateTimeline()
-    {
-        if (playableDirector == null) return;
-
-        if (playableDirector.playableAsset != null)
-        {
-            Destroy(playableDirector.playableAsset);
-        }
-
-        TimelineAsset timelineAsset = ScriptableObject.CreateInstance<TimelineAsset>();
-
-        playableDirector.playableAsset = timelineAsset;
-    }
-
-    void AddAnimationTrack(TimelineAsset timelineAsset, GameObject targetObject, string name, double startTime, Action action)
-    {
-        // Create an Animation Track
-        AnimationTrack animationTrack = timelineAsset.CreateTrack<AnimationTrack>(null, "Action Track");
-
-        // Bind the track to the target GameObject
-        playableDirector.SetGenericBinding(animationTrack, targetObject);
-
-        // Create an empty Timeline Clip (placeholder for time)
-        TimelineClip timelineClip = animationTrack.CreateDefaultClip();
-
-        // Set the clip's duration (customize as needed)
-        timelineClip.start = startTime;
-        timelineClip.duration = 1.0f;
-        timelineClip.displayName = name;
-
-        // Create a custom PlayableAsset to execute the Action
-        ActionPlayableAsset customAction = ScriptableObject.CreateInstance<ActionPlayableAsset>();
-        customAction.action = action;
-
-        // Assign the custom PlayableAsset to the clip
-        timelineClip.asset = customAction;
-    }
-
-    void AddSplineTrack(TimelineAsset timelineAsset, GameObject binding, ScriptGraphAsset scriptGraphAsset, string name, double startTime, float duration, List<Vector3> knotsData)
-    {
-        VisualScriptTrackAsset animationTrack = timelineAsset.CreateTrack<VisualScriptTrackAsset>(null, "Action Track");
-
-        TimelineClip timelineClip = animationTrack.CreateDefaultClip();
-
-        VisualScriptPlayableAsset visualScriptPlayableAsset = ScriptableObject.CreateInstance<VisualScriptPlayableAsset>();
-
-        List<BezierKnot> generatedKnotsData = new List<BezierKnot>();
-
-        playableDirector.SetGenericBinding(animationTrack, binding.GetComponent<ScriptMachine>());
-
-        float distance = knotsData.GetLength();
-        float walkSpeed = (float)Variables.Scene(SceneManager.GetActiveScene())["walkSpeed"];
-        //float duration = distance / (walkSpeed * 4f);
-
-        timelineClip.displayName = name;
-        timelineClip.start = startTime;
-        timelineClip.duration = duration;
-        timelineClip.asset = visualScriptPlayableAsset;
-
-        visualScriptPlayableAsset.bound = binding;
-        visualScriptPlayableAsset.knotsData = knotsData;
-        visualScriptPlayableAsset.scriptGraphAsset = scriptGraphAsset;
-        visualScriptPlayableAsset.splineLength = distance;
-    }
+    #endregion
 
     List<Vector3> DeserializeKnotsData(string JSONRaw)
     {
@@ -203,4 +268,5 @@ public class TFGTimeline : MonoBehaviour
 
         return result;
     }
+    #endregion
 }

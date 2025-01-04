@@ -59,6 +59,8 @@ public class EvaluateByDistance : Unit
         if (distance > knots.GetLength())
         {
             result = knots[^1];
+
+
         }
         else
         {

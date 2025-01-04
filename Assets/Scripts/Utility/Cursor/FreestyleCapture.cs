@@ -131,9 +131,7 @@ public class FreestyleCapture : MonoBehaviour
     {
         if (points.Count == 0) return;
 
-        //Debug.Log($"[FreestyleCapture] Valid points retrieved!");
-
         OnValidPointsAvailable?.Invoke(points);
-        OnValidPointsForTrackedGameObjectAvailable.Invoke(trackObject);
+        OnValidPointsForTrackedGameObjectAvailable?.Invoke(trackObject);
     }
 }

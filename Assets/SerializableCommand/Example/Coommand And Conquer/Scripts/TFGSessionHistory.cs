@@ -1,19 +1,30 @@
 using Innoveam;
 using Innoveam.Modules.Communication;
 using Innoveam.Modules.Data;
+using SimpleJSON;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class TFGSessionHistory : MonoBehaviour
 {
+    [SerializeField] TFGSessionData sessionData;
+
     [SerializeField] DatabaseObject sessionHistory;
 
     [Header("Communications")]
     [Header("Broadcasters")]
     [SerializeField] CommunicationHandler<string> OnImportData;
+    [SerializeField] CommunicationHandler<TFGActionRecord> OnActionRecorded;
+    [Header("Receivers")]
+    [SerializeField] CommunicationHandler<object> OnSessionStart;
+    [SerializeField] CommunicationHandler OnSessionStop;
+    [SerializeField] CommunicationHandler<TFGActionRecord> OnRecordAction;
 
     [Header("Prefabs")]
     [SerializeField] ComponentLookup buttonPrefab;
@@ -25,18 +36,87 @@ public class TFGSessionHistory : MonoBehaviour
 
     Transform ButtonContainer => componentLookup.Get<Transform>("button-container");
 
+
     private void Start()
     {
         buttonPool = new ObjectPool<ComponentLookup>(buttonPrefab);
 
+        OnSessionStart.Register(this).OnReceiveSignal += SessionStarted;
+        OnSessionStop.Register(this).OnReceiveSignal += value => SessionEnded();
+        OnRecordAction.Register(this).OnReceiveSignal += Record;
+
         Refresh();
     }
+
+    #region SESSION
+    public void SessionStarted(object obj)
+    {
+        var data = ((string sessionName, int duration, TFGCharacter[] characters)) obj;
+        sessionData = new TFGSessionData() { name = data.sessionName, startTime = DateTime.Now.ToString() };
+        foreach (var character in data.characters)
+        {
+            var characterTransformData = new TFGCharacterTransformData();
+            characterTransformData.character = character;
+            characterTransformData.worldPosition = character.transform.position;
+            characterTransformData.worldRotation = character.transform.eulerAngles;
+
+            sessionData.initialCharacterTransforms.Add(characterTransformData);
+        }
+    }
+
+    public void SessionEnded()
+    {
+        sessionData.endTime = DateTime.Now.ToString();
+
+        GetRecord();
+    }
+
+    #region RECORD
+    void Record(TFGActionRecord actionRecord)
+    {
+        sessionData.actionRecords.Add(actionRecord);
+
+        OnActionRecorded.Broadcast(actionRecord);
+    }
+
+    public void GetRecord()
+    {
+        ExportRecordAsJSON();
+        Refresh();
+    }
+
+    public string ExportRecordAsJSON()
+    {
+        var result = string.Empty;
+
+        var JSONNode = new JSONObject();
+
+        JSONNode.Add("name", sessionData.name);
+        JSONNode.Add("startTime", sessionData.startTime);
+        JSONNode.Add("endTime", sessionData.endTime);
+
+        var initialJSON = JSON.Parse(sessionData.SerializeInitialCharacterTransforms());
+        var recordJSON = JSON.Parse(sessionData.SerializeActionRecords());
+
+        JSONNode.Add("initialCharacterTransforms", initialJSON);
+        JSONNode.Add("actionRecords", recordJSON);
+
+        result = JSONNode.ToString();
+
+        var historyData = sessionHistory.data.AddNewChild(sessionData.startTime);
+        historyData.type = DatabaseObject.DataType.String;
+        historyData.stringValue = result;
+
+        return result;
+    }
+    #endregion
+    #endregion
 
     public void Refresh()
     {
         buttonPool.Clear();
 
-        foreach(var item in sessionHistory.data.childs)
+        foreach (var item in sessionHistory.data.childs)
         {
             var buttonLookup = buttonPool.Instantiate(ButtonContainer);
 
@@ -48,7 +128,6 @@ public class TFGSessionHistory : MonoBehaviour
             button.onClick.AddListener(() =>
             {
                 OnImportData.Broadcast(item.stringValue);
-                Debug.Log(item.stringValue);
             });
         }
     }
