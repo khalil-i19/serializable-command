@@ -6,13 +6,16 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
+using UnityEngine.UI;
 
 public class TimelineManagerUI : MonoBehaviour
 {
     [SerializeField] ComponentLookup componPrefab;
     [SerializeField] private List<PlayableAssetData> storedPlayableAssets = new();
-
     public PlayableDirector PlayableDirector;
+    public float timelineScale = 100f;
+    public float timebarLength = 1000f;
+
     public void PopulatePlayableAssets()
     {
         if (PlayableDirector != null)
@@ -50,8 +53,8 @@ public class TimelineManagerUI : MonoBehaviour
         }
     }
 
-    [ContextMenu("CreateassetsTimeline")]
-    public void CreateassetsTimeline()
+    [ContextMenu("CreateAssetsTimeline")]
+    public void CreateAssetsTimeline()
     {
         foreach (var playAsset in storedPlayableAssets)
         {
@@ -59,14 +62,19 @@ public class TimelineManagerUI : MonoBehaviour
             assetPlayable.transform.SetParent(componPrefab.Get<GameObject>("container").transform, false);
 
             ComponentLookup compoObject = assetPlayable.GetComponent<ComponentLookup>();
-            TextMeshProUGUI textnameAssets = compoObject.Get<TextMeshProUGUI>("title");
+            TextMeshProUGUI textnameAssets = compoObject.Get<TextMeshProUGUI>("clip_title");
+            LayoutElement layoutElement = compoObject.Get<LayoutElement>("timeline");
 
             string nameAssets = playAsset.name;
-
             textnameAssets.text = nameAssets;
 
             assetPlayable.gameObject.name = nameAssets;
             assetPlayable.SetActive(true);
+
+            float clipDurationInSeconds = (float)playAsset.duration;
+            float scaledDuration = clipDurationInSeconds * timelineScale;
+
+            layoutElement.preferredWidth = scaledDuration;
         }
     }
 }

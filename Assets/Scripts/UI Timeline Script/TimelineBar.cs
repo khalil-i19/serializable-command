@@ -1,129 +1,115 @@
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using System.Collections.Generic;
+using Innoveam.Modules.Data;
 
 public class TimelineBar : MonoBehaviour
 {
-    [Header("ScrollView Components")]
-    public ScrollRect scrollRect;
-    public RectTransform content;
+    [Header("Component")]
+    public ComponentLookup timeCompo;
 
-    [Header("Tick Settings")]
-    public GameObject tickPrefab;
-    public int initialTickCount = 20;
-    public float tickSpacing = 50f;
+    [Header("Pengaturan Tick dan Penggaris")]
+    public int rulerDuration = 300;
+    public int majorTickInterval = 10;
+    public int minorTickPerMajor = 5;
+    public int labelInterval = 30;
 
-    [Header("Zoom Settings")]
-    public float minSpacing = 10f;
-    public float maxSpacing = 100f;
-
-    [Header("Time Label Settings")]
-    public GameObject timeLabelPrefab;
-    public float timeLabelInterval = 30;
-
+    [Header("Pengaturan Zoom")]
+    public float minTickSpacing = 10f;
+    public float maxTickSpacing = 100f;
+    public float zoomSensitivity = 5f;
     private float currentSpacing;
-
-    // Object Pooling for ticks and labels
     private List<GameObject> tickPool = new List<GameObject>();
     private List<GameObject> labelPool = new List<GameObject>();
 
     void Start()
     {
-        currentSpacing = tickSpacing;
-        InitializeTicks();
-
-        var layoutGroup = content.GetComponent<HorizontalLayoutGroup>();
-        if (layoutGroup != null)
-        {
-            layoutGroup.enabled = false;
-        }
-
-        content.pivot = new Vector2(0, 0);
-        scrollRect.onValueChanged.AddListener(UpdateSpacing);
-        UpdateContent();
+        currentSpacing = maxTickSpacing / 2;
+        GenerateTimeline();
     }
 
-    void InitializeTicks()
+    void Update()
     {
-        // Clear the content before initializing new ticks
+        HandleMouseScrollZoom();
+    }
+
+    void HandleMouseScrollZoom()
+    {
+        float scrollDelta = Input.GetAxis("Mouse ScrollWheel");
+
+        if (Mathf.Abs(scrollDelta) > 0.01f)
+        {
+            currentSpacing = Mathf.Clamp(currentSpacing - scrollDelta * zoomSensitivity, minTickSpacing, maxTickSpacing);
+
+            GenerateTimeline();
+        }
+    }
+
+    void GenerateTimeline()
+    {
         ClearContent();
 
-        // Calculate tick count based on the width of the content
-        int tickCount = Mathf.CeilToInt(content.rect.width / tickSpacing);
+        int totalTicks = Mathf.CeilToInt((float)rulerDuration * minorTickPerMajor / majorTickInterval);
 
-        for (int i = 0; i < tickCount; i++)
+        for (int i = 0; i <= totalTicks; i++)
         {
-            // Reuse tick from pool or instantiate a new one if necessary
+            float tickPosition = i * currentSpacing;
+
             GameObject tick = GetPooledTick();
+            tick.transform.SetParent(timeCompo.Get<RectTransform>("time_Content"));
+            tick.transform.localScale = Vector3.one;
+            tick.GetComponent<RectTransform>().anchoredPosition = new Vector2(tickPosition, 0);
             tick.SetActive(true);
-            tick.transform.SetParent(content);
-            tick.transform.localPosition = new Vector2(i * tickSpacing, 0f);
 
-            if (i % timeLabelInterval == 0)
+            RectTransform tickRect = tick.GetComponent<RectTransform>();
+
+            if (i % minorTickPerMajor == 0)
             {
-                CreateTimeLabel(i);
+                tickRect.sizeDelta = new Vector2(2, 15);
+
+                if (i % (labelInterval / majorTickInterval) == 0)
+                {
+                    CreateTimeLabel(i, tickPosition);
+                }
             }
-        }
-    }
-
-    void CreateTimeLabel(int tickIndex)
-    {
-        GameObject timeLabel = GetPooledLabel();
-        timeLabel.SetActive(true);
-        timeLabel.transform.SetParent(content);
-
-        // Calculate time in seconds and set the text
-        float timeInSeconds = tickIndex * currentSpacing / tickSpacing;
-        timeLabel.GetComponent<TextMeshProUGUI>().text = $"{timeInSeconds:F2}s";
-
-        // Set the position of the label above the tick
-        timeLabel.transform.localPosition = new Vector2(tickIndex * currentSpacing, 30f);
-    }
-
-    void UpdateSpacing(Vector2 scrollPosition)
-    {
-        currentSpacing = Mathf.Lerp(minSpacing, maxSpacing, scrollPosition.x);
-        currentSpacing = Mathf.Clamp(currentSpacing, minSpacing, maxSpacing);
-
-        // After spacing update, adjust ticks and content layout
-        UpdateTicks();
-        UpdateContent();
-    }
-
-    void UpdateTicks()
-    {
-        // Reuse and reset the ticks in the pool instead of destroying them
-        foreach (Transform child in content)
-        {
-            if (child.gameObject.activeSelf)
+            else
             {
-                child.gameObject.SetActive(false);
+                tickRect.sizeDelta = new Vector2(1, 10);
             }
         }
 
-        // Reinitialize ticks based on the new spacing
-        InitializeTicks();
+        UpdateContentWidth();
     }
 
-    void UpdateContent()
+    void CreateTimeLabel(int tickIndex, float tickPosition)
     {
-        float xOffset = 0f;
-        foreach (Transform child in content)
-        {
-            child.localPosition = new Vector2(xOffset, 0f);
-            xOffset += currentSpacing;
-        }
+        GameObject label = GetPooledLabel();
+        label.transform.SetParent(timeCompo.Get<RectTransform>("time_Content"));
+        label.transform.localScale = Vector3.one;
+        label.GetComponent<RectTransform>().anchoredPosition = new Vector2(tickPosition, -12);
+
+        int timeInSeconds = tickIndex * majorTickInterval;
+
+        label.GetComponent<TextMeshProUGUI>().text = $"{timeInSeconds}s";
+        label.SetActive(true);
     }
 
-    // Object Pooling Helpers
+    void UpdateContentWidth()
+    {
+        ScrollRect scrollRect = timeCompo.Get<ScrollRect>("time_scroll");
+        RectTransform content = timeCompo.Get<RectTransform>("time_Content");
+        float totalWidth = content.rect.width;
+        content.sizeDelta = new Vector2(totalWidth, content.sizeDelta.y);
+        scrollRect.horizontalNormalizedPosition = 0f;
+    }
+
     GameObject GetPooledTick()
     {
         GameObject tick = tickPool.Find(t => !t.activeSelf);
         if (tick == null)
         {
-            // If no inactive tick found, instantiate a new one
-            tick = Instantiate(tickPrefab);
+            tick = Instantiate(timeCompo.Get<GameObject>("line_Ruler"));
             tickPool.Add(tick);
         }
         return tick;
@@ -134,8 +120,7 @@ public class TimelineBar : MonoBehaviour
         GameObject label = labelPool.Find(l => !l.activeSelf);
         if (label == null)
         {
-            // If no inactive label found, instantiate a new one
-            label = Instantiate(timeLabelPrefab);
+            label = Instantiate(timeCompo.Get<GameObject>("time_Text"));
             labelPool.Add(label);
         }
         return label;
@@ -143,10 +128,14 @@ public class TimelineBar : MonoBehaviour
 
     void ClearContent()
     {
-        // Clear all objects in the content (but without destroying them)
-        foreach (Transform child in content)
+        foreach (GameObject tick in tickPool)
         {
-            child.gameObject.SetActive(false);
+            tick.SetActive(false);
+        }
+
+        foreach (GameObject label in labelPool)
+        {
+            label.SetActive(false);
         }
     }
 }
