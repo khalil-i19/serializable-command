@@ -32,7 +32,7 @@ public class EvaluateByDistance : Unit
         inputTrigger = ControlInput("inputTrigger", Execute);
         outputTrigger = ControlOutput("outputTrigger");
 
-        knotInput = ValueInput<List<Vector3>>("knots");
+        knotInput = ValueInput<List<Vector3>>("data");
         distanceInput = ValueInput<float>("distance");
 
         result = ValueOutput<Vector3>("result", Evaluate);

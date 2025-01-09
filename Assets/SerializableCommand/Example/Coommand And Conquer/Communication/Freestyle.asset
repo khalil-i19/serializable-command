@@ -41,6 +41,7 @@ MonoBehaviour:
     - rid: 4118658932373192722
       type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
       data:
+        referenceID: 045f3ba6-6137-4330-bdf6-7070f12116ac
         name: OnFreestyleStarted
         defaultParameter: 0
         group:
@@ -48,6 +49,7 @@ MonoBehaviour:
     - rid: 4118658932373192723
       type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
       data:
+        referenceID: 76346dc5-52e9-4f91-85ac-6c407cdf984b
         name: OnFreestyleUpdated
         defaultParameter: 0
         group:
@@ -55,6 +57,7 @@ MonoBehaviour:
     - rid: 4118658932373192724
       type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
       data:
+        referenceID: 2560ccb8-d338-4c2b-a28b-94b3ec0e429a
         name: OnFreestyleStopped
         defaultParameter: 0
         group:
@@ -62,6 +65,7 @@ MonoBehaviour:
     - rid: 4118658932373192725
       type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
       data:
+        referenceID: 7adae81e-b652-4f3c-9057-354f1ff94915
         name: OnPointAdded
         defaultParameter: 0
         group:
@@ -69,6 +73,7 @@ MonoBehaviour:
     - rid: 4118658955034492929
       type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
       data:
+        referenceID: 00d78e69-c74c-453b-bdd3-4f9a195fbdff
         name: SetEnable
         defaultParameter: 4
         group:
@@ -84,6 +89,7 @@ MonoBehaviour:
     - rid: 4118658955034492931
       type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
       data:
+        referenceID: 439b5b08-f8bb-4e75-957b-616c13ef5a54
         name: OnPointerExit
         defaultParameter: 6
         group:
@@ -91,7 +97,8 @@ MonoBehaviour:
     - rid: 4118658955034492932
       type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
       data:
+        referenceID: 3ea738eb-ec90-4b90-87a2-4552d2787d87
         name: OnPointerEnter
-        defaultParameter: 0
+        defaultParameter: 6
         group:
           rid: 4118658955034492930

@@ -38,12 +38,12 @@ public class AddressableUtility : MonoBehaviour
 
     IEnumerator LoadingAddressables()
     {
-        Debug.Log($"Start loading Addressable with label: {label}");
+        //Debug.Log($"Start loading Addressable with label: {label}");
 
         List<object> loadedAddressableAssets = new List<object>();
         loadHandler = Addressables.LoadAssetsAsync<object>(label, asset =>
         {
-            Debug.Log($"Loaded Addressable asset with type \"{asset.GetType()}\"");
+            //Debug.Log($"Loaded Addressable asset with type \"{asset.GetType()}\"");
 
             loadedAddressableAssets.Add(asset);
             OnEachAddressableAssetsLoaded?.Invoke(asset);
@@ -53,7 +53,7 @@ public class AddressableUtility : MonoBehaviour
 
         OnAddressableAssetsLoaded?.Invoke(loadedAddressableAssets);
 
-        Debug.Log($"Stop loading Addressable with label: {label}");
+        //Debug.Log($"Stop loading Addressable with label: {label}");
     }
 
 }

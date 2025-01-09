@@ -58,6 +58,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -324,16 +327,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae04a1f0bdc4f1b43963c8143985a4f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  container:
-    enabled: 0
-    value: {fileID: 0}
   broadcastMode: 1
   targetID: 
-  commID:
-    channelID: SetEnable
+  signalArea:
+    rid: -2
+  channelID:
     channel: {fileID: 11400000, guid: d9c233322f8314d4d9efda58aedc8ae0, type: 2}
-    owner: {fileID: 0}
-    lastBroadcaster: {fileID: 0}
+    referenceID: 00d78e69-c74c-453b-bdd3-4f9a195fbdff
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &951977653727494348
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -346,16 +351,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae04a1f0bdc4f1b43963c8143985a4f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  container:
-    enabled: 0
-    value: {fileID: 0}
   broadcastMode: 1
   targetID: 
-  commID:
-    channelID: ObjectInteraction/OnPointerExit
+  signalArea:
+    rid: -2
+  channelID:
     channel: {fileID: 11400000, guid: d9c233322f8314d4d9efda58aedc8ae0, type: 2}
-    owner: {fileID: 0}
-    lastBroadcaster: {fileID: 0}
+    referenceID: 439b5b08-f8bb-4e75-957b-616c13ef5a54
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &6431719304095244286
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -368,16 +375,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae04a1f0bdc4f1b43963c8143985a4f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  container:
-    enabled: 0
-    value: {fileID: 0}
   broadcastMode: 1
   targetID: 
-  commID:
-    channelID: ObjectInteraction/OnPointerEnter
+  signalArea:
+    rid: -2
+  channelID:
     channel: {fileID: 11400000, guid: d9c233322f8314d4d9efda58aedc8ae0, type: 2}
-    owner: {fileID: 0}
-    lastBroadcaster: {fileID: 0}
+    referenceID: 3ea738eb-ec90-4b90-87a2-4552d2787d87
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &889327239848062768
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -472,7 +481,7 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -493,10 +502,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _data:
-    _json: '{"declarations":{"Kind":"Object","collection":{"$content":[{"name":"distanceTraveled","value":{"$content":0.0,"$type":"System.Single"},"typeHandle":{"Identification":"System.Single,
-      mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089","$version":"A"},"$version":"A"},{"name":"splineData","value":{"$content":[],"$type":"System.Collections.Generic.List`1[[UnityEngine.Vector3,
-      UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"},"typeHandle":{"Identification":"System.Collections.Generic.List`1[[UnityEngine.Vector3,
-      UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]],
+    _json: '{"declarations":{"Kind":"Object","collection":{"$content":[{"name":"time","value":{"$content":0.0,"$type":"System.Single"},"typeHandle":{"Identification":"System.Single,
       mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089","$version":"A"},"$version":"A"}],"$version":"A"},"$version":"A"}}'
     _objectReferences: []
 --- !u!114 &3555886470729199315
@@ -528,10 +534,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scriptMachine: {fileID: 3555886470729199315}
   OnStartExecutingScriptMachine:
-    channelID: Command/CommandInvoked
     channel: {fileID: 11400000, guid: d29a7d09a45a35744bce481fb481ab85, type: 2}
-    owner: {fileID: 0}
-    lastBroadcaster: {fileID: 0}
+    referenceID: 
 --- !u!114 &3531610867862091098
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -544,8 +548,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: daff702e72e39ff468abc0269cbdbe87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  actions: []
   id: character_1
-  actionSet: []
+  OnCharacterStartInteracting:
+    channel: {fileID: 11400000, guid: d29a7d09a45a35744bce481fb481ab85, type: 2}
+    referenceID: 69212412-feff-472e-a9ef-6ce649f9af63
+  OnCharacterStopInteracting:
+    channel: {fileID: 11400000, guid: d29a7d09a45a35744bce481fb481ab85, type: 2}
+    referenceID: dbd387c1-2990-4ed1-b398-20c36023f45c
 --- !u!114 &3520717787512298597
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -559,7 +569,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ignoreOverUI: 0
-  trigger: 101
+  trigger: 0
   holdTreshold: 3
   dragTreshold: 10
   moveTreshold: 10

@@ -48,7 +48,7 @@ public class TFGUI : MonoBehaviour, IInitializable
 
         currentCharacterActionButtons.Clear();
 
-        foreach (var action in character.actionSet)
+        foreach (var action in character.GetActions())
         {
             var currentCharacterActionButton = currentCharacterActionButtons.Instantiate(currentCharacterActionButtonsContainer);
 

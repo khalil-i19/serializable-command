@@ -23,16 +23,22 @@ MonoBehaviour:
   - rid: 2227401722102808579
   - rid: 2227401722102808581
   - rid: 2227401722102808582
+  - rid: 2227401794227273730
+  - rid: 2227401794227273731
+  - rid: 2227401816161910784
   groups:
   - rid: 4118658842506559488
   - rid: 4118658842506559490
   - rid: 4118659006167777283
+  - rid: 2227401794227273729
+  - rid: 2227401857853030422
   references:
     version: 2
     RefIds:
     - rid: 2227401722102808576
       type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
       data:
+        referenceID: cdee54b1-253b-44a7-be26-c56749e1341f
         name: Recorded
         defaultParameter: 0
         group:
@@ -40,6 +46,7 @@ MonoBehaviour:
     - rid: 2227401722102808578
       type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
       data:
+        referenceID: bc20b660-76dd-413d-8253-4feab17edb16
         name: Start
         defaultParameter: 0
         group:
@@ -47,6 +54,7 @@ MonoBehaviour:
     - rid: 2227401722102808579
       type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
       data:
+        referenceID: 9894680d-f9e9-412b-a191-debc4f1aad1c
         name: Stop
         defaultParameter: 0
         group:
@@ -54,6 +62,7 @@ MonoBehaviour:
     - rid: 2227401722102808581
       type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
       data:
+        referenceID: 0fc89832-ed83-4654-bde9-c1b34d552fbb
         name: Duration
         defaultParameter: 0
         group:
@@ -61,10 +70,51 @@ MonoBehaviour:
     - rid: 2227401722102808582
       type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
       data:
-        name: DurationNormalized
+        referenceID: 6bc07298-5841-4e7d-9767-e8c3ee7eb0a8
+        name: Time
         defaultParameter: 0
         group:
           rid: 4118659006167777283
+    - rid: 2227401794227273729
+      type: {class: CommunicationChannel/ChannelGroup, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
+      data:
+        name: Interaction
+        member:
+        - rid: 2227401794227273730
+        - rid: 2227401794227273731
+        - rid: 2227401816161910784
+        shownInInspector: 1
+    - rid: 2227401794227273730
+      type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
+      data:
+        referenceID: 69212412-feff-472e-a9ef-6ce649f9af63
+        name: TriggerEnter
+        defaultParameter: 0
+        group:
+          rid: 2227401794227273729
+    - rid: 2227401794227273731
+      type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
+      data:
+        referenceID: dbd387c1-2990-4ed1-b398-20c36023f45c
+        name: TriggerExit
+        defaultParameter: 0
+        group:
+          rid: 2227401794227273729
+    - rid: 2227401816161910784
+      type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
+      data:
+        referenceID: 2ddbb56a-226b-4399-8c4a-048a33ca4bfe
+        name: ShowInteraction
+        defaultParameter: 6
+        group:
+          rid: 2227401794227273729
+    - rid: 2227401857853030422
+      type: {class: CommunicationChannel/ChannelGroup, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
+      data:
+        name: SessionTimeline
+        member:
+        - rid: 4118659006167777285
+        shownInInspector: 1
     - rid: 4118658842506559488
       type: {class: CommunicationChannel/ChannelGroup, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
       data:
@@ -75,6 +125,7 @@ MonoBehaviour:
     - rid: 4118658842506559489
       type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
       data:
+        referenceID: d1cc136a-bc25-4286-b110-b7c063b422bd
         name: CurrentCharacterUpdated
         defaultParameter: 0
         group:
@@ -90,6 +141,7 @@ MonoBehaviour:
     - rid: 4118658842506559491
       type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
       data:
+        referenceID: d6f413c3-bbd9-4981-b6a6-d793f0b0287d
         name: Record
         defaultParameter: 0
         group:
@@ -100,7 +152,6 @@ MonoBehaviour:
         name: Session
         member:
         - rid: 4118659006167777284
-        - rid: 4118659006167777285
         - rid: 4118659006167777286
         - rid: 2227401722102808578
         - rid: 2227401722102808579
@@ -110,6 +161,7 @@ MonoBehaviour:
     - rid: 4118659006167777284
       type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
       data:
+        referenceID: fd9d9f73-5c9e-4f5a-a441-7672ad561b34
         name: OnImportData
         defaultParameter: 0
         group:
@@ -117,13 +169,15 @@ MonoBehaviour:
     - rid: 4118659006167777285
       type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
       data:
-        name: OnPlayHistory
+        referenceID: 538aa5a1-b8b5-43d4-af4e-7d0dda90e166
+        name: Play
         defaultParameter: 0
         group:
-          rid: 4118659006167777283
+          rid: 2227401857853030422
     - rid: 4118659006167777286
       type: {class: CommunicationChannel/ChannelID, ns: Innoveam.Modules.Communication, asm: Innoveam.Communication}
       data:
+        referenceID: 7ad1b27f-1ec1-478c-9ab4-627fbd19cd36
         name: OnDataLoaded
         defaultParameter: 0
         group:

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -16,6 +17,8 @@ public class TFGSessionHistory : MonoBehaviour
     [SerializeField] TFGSessionData sessionData;
 
     [SerializeField] DatabaseObject sessionHistory;
+
+    [SerializeField] PlayableDirector playableDirector;
 
     [Header("Communications")]
     [Header("Broadcasters")]
@@ -35,7 +38,6 @@ public class TFGSessionHistory : MonoBehaviour
     ObjectPool<ComponentLookup> buttonPool;
 
     Transform ButtonContainer => componentLookup.Get<Transform>("button-container");
-
 
     private void Start()
     {
@@ -74,10 +76,14 @@ public class TFGSessionHistory : MonoBehaviour
     #region RECORD
     void Record(TFGActionRecord actionRecord)
     {
+        actionRecord.time = GetTime();
+
         sessionData.actionRecords.Add(actionRecord);
 
         OnActionRecorded.Broadcast(actionRecord);
     }
+
+    double GetTime() => playableDirector.time;
 
     public void GetRecord()
     {

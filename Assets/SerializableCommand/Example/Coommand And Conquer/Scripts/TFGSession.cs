@@ -1,8 +1,10 @@
+using Innoveam;
 using Innoveam.Modules.Communication;
 using Innoveam.Modules.Data;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -11,23 +13,33 @@ public class TFGSession : MonoBehaviour
 {
     [SerializeField] List<ScriptGraphAsset> _scriptGraphAssets = new();
     [SerializeField] List<TFGCharacter> _characters = new();
+    
 
     [SerializeField] int sessionDurationInSeconds;
 
     [SerializeField] DatabaseObject sessionDataHistory;
+
+    [Header("References")]
+    [SerializeField] Transform characterInteractionContainer;
+
+    [Header("Prefabs")]
+    [SerializeField] TFGCharacterInteraction characterInteractionPrefab;
 
     [Header("Communication")]
     [Header("Broadcasters")]
     [SerializeField] CommunicationHandler<object> OnSessionStart;
     [SerializeField] CommunicationHandler OnSessionStop;
     [SerializeField] CommunicationHandler<float> OnDurationSet;
+    [SerializeField] CommunicationHandler<TFGCharacter> OnCurrentCharacterUpdated;
 
     [Header("Receivers")]
-    [SerializeField] CommunicationHandler<TFGCharacter> OnCurrentCharacterUpdated;
+    [SerializeField] CommunicationHandler<(TFGCharacter, TFGObjectInteractable)> OnCharacterStartInteracting;
+    [SerializeField] CommunicationHandler<TFGCharacter> OnCharacterStopInteracting;
 
     Dictionary<string, ScriptGraphAsset> scriptGraphAssets = new();
     Dictionary<string, TFGCharacter> characters = new();
 
+    Dictionary<TFGCharacter, TFGCharacterInteraction> characterInteractionPool;
 
     int characterIndex = 0;
 
@@ -42,13 +54,28 @@ public class TFGSession : MonoBehaviour
     #region METHODS
     private void Awake()
     {
+        characterInteractionPool = new();
+
+        OnCharacterStartInteracting.Register(this).OnReceiveSignal += DisplayInteractionPanel;
+        OnCharacterStopInteracting.Register(this).OnReceiveSignal += HideInteractionPanel;
 
         characters.Clear();
-        foreach (var character in _characters) characters.Add(character.id, character);
+        foreach (var character in _characters)
+        {
+            characters.Add(character.id, character);
+
+            var characterInteraction = Instantiate(characterInteractionPrefab, characterInteractionContainer);
+            characterInteraction.Initialize(character);
+            characterInteraction.gameObject.SetActive(false);
+            characterInteraction.gameObject.name = character.name;
+
+            characterInteractionPool.Add(character, characterInteraction);
+        }
     }
 
     public TFGCharacter GetCharacter(string characterId) => characters[characterId];
     public ScriptGraphAsset GetScriptGraphAsset(string key) => scriptGraphAssets[key];
+
     #region SESSION
     [ContextMenu("Start Session")]
     public void StartSession() => StartSession(DateTime.Now.TimeOfDay.ToString());
@@ -75,7 +102,7 @@ public class TFGSession : MonoBehaviour
     {
         Variables.Scene(SceneManager.GetActiveScene())["replayMode"] = true;
 
-        foreach(var character in _characters)
+        foreach (var character in _characters)
         {
             character.ClearCommand();
         }
@@ -89,6 +116,17 @@ public class TFGSession : MonoBehaviour
 
         OnCurrentCharacterUpdated.Broadcast(_characters[characterIndex]);
     }
+    #endregion
+
+    #region INTERACTION
+    void DisplayInteractionPanel((TFGCharacter source, TFGObjectInteractable interactedObject) data)
+    {
+        var characterInteraction = characterInteractionPool[data.source];
+        characterInteraction.gameObject.SetActive(true);
+        characterInteraction.Show(data.interactedObject, data.interactedObject.GetActions());
+    }
+
+    void HideInteractionPanel(TFGCharacter source) => characterInteractionPool[source].gameObject.SetActive(false);
     #endregion
 
     #region SCRIPT GRAPH ASSET

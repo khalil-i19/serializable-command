@@ -36,7 +36,9 @@ public class TFGTimeline : MonoBehaviour
 
     public Action<PlayableDirector> OnTimelineStopped;
 
-    double lastTime = -1;
+    float lastTime = -1;
+
+    int debugIndex = -1;
 
     #region METHODS
 
@@ -68,6 +70,8 @@ public class TFGTimeline : MonoBehaviour
         playableDirector.Pause();
         playableDirector.time = seconds;
         playableDirector.Evaluate();
+
+        lastTime = seconds;
     }
 
     public void SetTime01(float interpolant)
@@ -79,13 +83,11 @@ public class TFGTimeline : MonoBehaviour
 
     private void Update()
     {
-        if(lastTime != playableDirector.time)
+        if (lastTime != playableDirector.time)
         {
-            lastTime = playableDirector.time;
+            lastTime = (float)playableDirector.time;
 
-            var durationInterpolant = Mathf.InverseLerp(0, (float)playableDirector.duration, (float)lastTime);
-
-            OnTimeChangedNormalized.Broadcast(durationInterpolant);
+            OnTimeChangedNormalized.Broadcast(lastTime);
         }
     }
     #endregion
@@ -105,21 +107,19 @@ public class TFGTimeline : MonoBehaviour
         playableDirector.playableAsset = timelineAsset;
     }
 
-    void Append(TFGActionRecord data)
+    void Append(TFGActionRecord record)
     {
-        //var sessionEventTime = DateTime.Parse(data.time);
-        var character = data.character;
-        var scriptGraphAsset = data.action;
-        var duration = data.duration;// sessionEvent["traversalTime"].AsFloat;
-        var knotsData = data.movementData;
+        var character = record.character;
+        var scriptGraphAsset = record.action;
+        var duration = record.duration;
+        var data = record.data;
 
         var characterId = character.id;
 
-        //var sessionEventRelativeTime = (sessionEventTime - startTime).TotalSeconds;
         var sessionEventRelativeTime = playableDirector.time;
 
-        AddSplineTrack((TimelineAsset)playableDirector.playableAsset, character.gameObject, scriptGraphAsset, $"{characterId} {scriptGraphAsset.name}", sessionEventRelativeTime, duration, knotsData);
-        
+        AddPlayableTrack(character.gameObject, scriptGraphAsset, $"{characterId} {scriptGraphAsset.name}", sessionEventRelativeTime, duration, data);
+
         playableDirector.RebuildGraph();
     }
 
@@ -147,8 +147,10 @@ public class TFGTimeline : MonoBehaviour
         timelineClip.asset = customAction;
     }
 
-    void AddSplineTrack(TimelineAsset timelineAsset, GameObject binding, ScriptGraphAsset scriptGraphAsset, string name, double startTime, float duration, List<Vector3> knotsData)
+    void AddPlayableTrack(GameObject binding, ScriptGraphAsset scriptGraphAsset, string name, double startTime, double duration, JSONObject data)
     {
+        var timelineAsset = (TimelineAsset)playableDirector.playableAsset;
+
         VisualScriptTrackAsset animationTrack = timelineAsset.FirstOrNew<VisualScriptTrackAsset>(binding.name);
 
         TimelineClip timelineClip = animationTrack.CreateDefaultClip();
@@ -159,18 +161,16 @@ public class TFGTimeline : MonoBehaviour
 
         playableDirector.SetGenericBinding(animationTrack, binding.GetComponent<ScriptMachine>());
 
-        float distance = knotsData.GetLength();
-        float walkSpeed = (float)Variables.Scene(SceneManager.GetActiveScene())["walkSpeed"];
-
         timelineClip.displayName = name;
         timelineClip.start = startTime;
         timelineClip.duration = duration;
         timelineClip.asset = visualScriptPlayableAsset;
 
+        visualScriptPlayableAsset.name = $"{++debugIndex}. {name}";
         visualScriptPlayableAsset.bound = binding;
-        visualScriptPlayableAsset.knotsData = knotsData;
+        visualScriptPlayableAsset.data = data;
         visualScriptPlayableAsset.scriptGraphAsset = scriptGraphAsset;
-        visualScriptPlayableAsset.splineLength = distance;
+        visualScriptPlayableAsset.clip = timelineClip;
     }
     #endregion
 
@@ -230,11 +230,11 @@ public class TFGTimeline : MonoBehaviour
             var sessionEventTime = DateTime.Parse(sessionEvent["time"].Value);
             var sessionEventRelativeTime = (sessionEventTime - startTime).TotalSeconds;
 
-            List<Vector3> knotsData = DeserializeKnotsData(sessionEvent["movementData"].Value);
+            var data = sessionEvent["data"].AsObject;
 
             var duration = sessionEvent["traversalTime"].AsFloat;
 
-            AddSplineTrack((TimelineAsset)playableDirector.playableAsset, character.gameObject, scriptGraphAsset, $"{i}. {characterId} {sessionEvent["action"].Value}", sessionEventRelativeTime, duration, knotsData);
+            AddPlayableTrack(character.gameObject, scriptGraphAsset, $"{i}. {characterId} {sessionEvent["action"].Value}", sessionEventRelativeTime, duration, data);
 
             i++;
         }

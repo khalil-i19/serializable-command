@@ -1,5 +1,6 @@
 using Innoveam.Modules.Communication;
 using Innoveam.Templates;
+using SimpleJSON;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -18,15 +19,8 @@ public class TFGMovement : MonoBehaviour
     [Header("Communications")]
     [Header("Broadcasters")]
     [SerializeField] CommunicationHandler<TFGActionRecord> OnRecordAction;
-    //[Header("Receivers")]
-    //[SerializeField] CommunicationHandler<GameObject> OnValidPointsForTrackedGameObjectAvailable;
 
     Spline cachedSplineData;
-
-    private void Start()
-    {
-        //OnValidPointsForTrackedGameObjectAvailable.Register(this).OnReceiveSignal += Process;
-    }
 
     public void Process(GameObject target)
     {
@@ -42,14 +36,27 @@ public class TFGMovement : MonoBehaviour
 
         yesEvent.callback = () =>
         {
-            var knotsData = new List<Vector3>();
+            List<Vector3> splineKnots = new List<Vector3>();
+
+            JSONObject scriptGraphData = new JSONObject();
+            JSONArray knotData = new JSONArray();
 
             foreach (var knot in cachedSplineData.Knots.Select(x => x.Position))
             {
-                var knotItem = new Vector3(knot.x, knot.y, knot.z);
+                JSONObject vector3Data = new JSONObject();
+                vector3Data.Add("x", knot.x);
+                vector3Data.Add("y", knot.y);
+                vector3Data.Add("z", knot.z);
 
-                knotsData.Add(knotItem);
+                knotData.Add(vector3Data);
+                splineKnots.Add(new Vector3(knot.x, knot.y, knot.z));
             }
+
+            var jsonData = JsonUtility.ToJson(new ListWrapper<Vector3>(splineKnots));
+            var jsonObject = JSON.Parse(jsonData);
+
+            scriptGraphData.Add("type", typeof(ListWrapper<Vector3>).AssemblyQualifiedName);
+            scriptGraphData.Add("data", jsonObject);
 
             var tfgCharacter = target.GetComponent<TFGCharacter>();
             if (tfgCharacter == null) return;
@@ -60,8 +67,8 @@ public class TFGMovement : MonoBehaviour
 
             actionRecord.action = freestyleMovementAction;
             actionRecord.character = tfgCharacter;
-            actionRecord.movementData = knotsData;
-            actionRecord.duration = knotsData.GetLength() / speed;
+            actionRecord.data = scriptGraphData;
+            actionRecord.duration = splineKnots.GetLength() / speed;
 
             OnRecordAction.Broadcast(actionRecord);
         };

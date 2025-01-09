@@ -1,3 +1,5 @@
+using SimpleJSON;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Mathematics;
@@ -25,13 +27,15 @@ public class EvaluateByTime : Unit
     [DoNotSerialize]
     public ValueOutput result { get; private set; }
 
+    Spline _spline = null;
+
     protected override void Definition()
     {
         // Define Ports
         inputTrigger = ControlInput("inputTrigger", Execute);
         outputTrigger = ControlOutput("outputTrigger");
 
-        knotInput = ValueInput<List<Vector3>>("knots");
+        knotInput = ValueInput<List<Vector3>>("data");
         timeInput = ValueInput<float>("time");
 
         result = ValueOutput<Vector3>("result", Evaluate);
@@ -50,22 +54,30 @@ public class EvaluateByTime : Unit
 
     private Vector3 Evaluate(Flow flow)
     {
-        var knots = flow.GetValue<List<Vector3>>(knotInput);
+        var knots = flow.GetValue<ListWrapper<Vector3>>(knotInput);
         var time = flow.GetValue<float>(timeInput);
 
+        Populate(knots.list);
+
+        time = Mathf.Clamp01(time);
+
+        _spline.Evaluate(time, out float3 position, out float3 tangent, out float3 upVector);
+
+        Vector3 result = new Vector3(position.x, position.y, position.z);
+
+        return result;
+    }
+
+    void Populate(List<Vector3> data)
+    {
         List<BezierKnot> bezierKnots = new List<BezierKnot>();
-        foreach(var knot in knots)
+
+        foreach (var knot in data)
         {
             var bezierKnot = new BezierKnot(new float3(knot.x, knot.y, knot.z));
             bezierKnots.Add(bezierKnot);
         }
 
-        Spline spline = new Spline(bezierKnots);
-
-        spline.Evaluate(time, out float3 position, out float3 tangent, out float3 upVector);
-
-        Vector3 result = new Vector3(position.x, position.y, position.z);
-
-        return result;
+        _spline = new Spline(bezierKnots);
     }
 }

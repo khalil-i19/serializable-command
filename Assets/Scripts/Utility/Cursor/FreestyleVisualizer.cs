@@ -27,8 +27,6 @@ public class FreestyleVisualizer : MonoBehaviour
 
         OnFreestyleStarted.Register(this).OnReceiveSignal += value =>
         {
-            //Debug.Log("[FreestyleVisualizer] Started capturing");
-
             splineContainer.Spline.Clear();
             lineRenderer.positionCount = 0;
             Render();
@@ -62,6 +60,7 @@ public class FreestyleVisualizer : MonoBehaviour
 
         Vector3[] positions = new Vector3[spline.Count];
         int i = 0;
+
         foreach(var knot in spline.Knots)
         {
             Vector3 position = Vector3.zero;
@@ -78,17 +77,5 @@ public class FreestyleVisualizer : MonoBehaviour
         }
 
         lineRenderer.SetPositions(positions);
-
-        //// Generate points along the spline
-        //Vector3[] sampledPoints = new Vector3[resolution];
-        //for (int i = 0; i < resolution; i++)
-        //{
-        //    float t = i / (float)(resolution - 1); // Normalized parameter (0 to 1)
-        //    sampledPoints[i] = spline.EvaluatePosition(t);
-        //}
-
-        //// Set the points to the LineRenderer
-        //lineRenderer.positionCount = resolution;
-        //lineRenderer.SetPositions(sampledPoints);
     }
 }

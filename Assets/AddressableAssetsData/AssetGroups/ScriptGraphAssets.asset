@@ -77,6 +77,21 @@ MonoBehaviour:
     - player-commands
     - enemy-commands
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 72599878711f0bb4ea7d557bbfd76c98
+    m_Address: Assets/SerializableCommand/Example/Coommand And Conquer/VisualScripts/Player/Defuse.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: aee59eac8cd3983418956f9bb5b93d04
+    m_Address: Assets/SerializableCommand/Example/Coommand And Conquer/VisualScripts/Player/Take.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3cfc2640e10fd9349bdf03e26f915e37
+    m_Address: Assets/SerializableCommand/Example/Coommand And Conquer/VisualScripts/Player/Rescue.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 28d3940a8e855a741b32c47a8036105b, type: 2}
   m_SchemaSet:
