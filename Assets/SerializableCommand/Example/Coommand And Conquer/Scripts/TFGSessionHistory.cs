@@ -14,8 +14,6 @@ using UnityEngine.UI;
 
 public class TFGSessionHistory : MonoBehaviour
 {
-    [SerializeField] TFGSessionData sessionData;
-
     [SerializeField] DatabaseObject sessionHistory;
 
     [SerializeField] PlayableDirector playableDirector;
@@ -35,6 +33,9 @@ public class TFGSessionHistory : MonoBehaviour
     [Header("References")]
     [SerializeField] ComponentLookup componentLookup;
 
+    [Header("Current History")]
+    public TFGSessionData sessionData;
+
     ObjectPool<ComponentLookup> buttonPool;
 
     Transform ButtonContainer => componentLookup.Get<Transform>("button-container");
@@ -53,9 +54,10 @@ public class TFGSessionHistory : MonoBehaviour
     #region SESSION
     public void SessionStarted(object obj)
     {
-        var data = ((string sessionName, int duration, TFGCharacter[] characters)) obj;
-        sessionData = new TFGSessionData() { name = data.sessionName, startTime = DateTime.Now.ToString() };
-        foreach (var character in data.characters)
+        var data = ((string sessionGUID, string scenarioGUID, int duration, Dictionary<string, TFGCharacter> characters, Dictionary<string, TFGObject> objects))obj;
+        sessionData = new TFGSessionData() { guid = data.sessionGUID, sessionBase = data.scenarioGUID, startTime = DateTime.Now.ToString() };
+
+        foreach (var character in data.characters.Values)
         {
             var characterTransformData = new TFGCharacterTransformData();
             characterTransformData.character = character;
@@ -97,7 +99,9 @@ public class TFGSessionHistory : MonoBehaviour
 
         var JSONNode = new JSONObject();
 
-        JSONNode.Add("name", sessionData.name);
+        JSONNode.Add("guid", sessionData.guid);
+        JSONNode.Add("sessionBase", sessionData.sessionBase);
+        //JSONNode.Add("duration", sessionData.duration);
         JSONNode.Add("startTime", sessionData.startTime);
         JSONNode.Add("endTime", sessionData.endTime);
 

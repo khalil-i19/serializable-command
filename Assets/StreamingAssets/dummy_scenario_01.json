@@ -1,0 +1,52 @@
+{
+    "guid": "fc5377fc-330a-411c-bd40-440522f2b8ce",
+    "data": {
+        "name": "scenario 01",
+        "duration": 60,
+        "description": "testing scenario",
+        "characters": [
+            {
+                "guid": "361b8907-24d4-45cd-b767-d30a923dc489",
+                "base": "2117b8f2-ffd9-4bec-a789-424bdaadf970"
+            },
+            {
+                "guid": "b6c6ebea-89c7-4010-8fc5-829b6361e5a1",
+                "base": "4ab1ea83-da1b-42af-a0ea-aaf25e8f5be1"
+            },
+            {
+                "guid": "5163fd1d-aa26-4d55-8317-0a5522638379",
+                "base": "4cc4e350-df54-4b6d-b48b-d967a2dcf909"
+            }
+        ],
+        "objects": [
+            {
+                "base": "8ee8ff3f-0ae1-4429-bb90-82cbbb8a4539",
+                "id": "584fe28d-dd14-4645-8d72-86e7b1218e15",
+                "long": 107.1870,
+                "lat": -6.1477,
+                "name": ""
+            },
+            {
+                "base": "8f3953fa-6cfc-4e56-9e18-62f81fa1e496",
+                "id": "13108657-61d4-410d-a49a-2bc067093591",
+                "long": 107.1870,
+                "lat": -6.1477,
+                "name": ""
+            },
+            {
+                "base": "7e167167-2432-4452-aede-4e752d315ede",
+                "id": "05066313-39c2-4351-a4d9-e5d4479cf50f",
+                "long": 107.1870,
+                "lat": -6.1477,
+                "name": ""
+            },
+            {
+                "base": "0589ac8b-6561-45c5-961a-b566c9c9ee75",
+                "id": "8605167a-0b38-45c6-8ef7-d7504a902376",
+                "long": 107.1870,
+                "lat": -6.1477,
+                "name": ""
+            }
+        ]
+    }
+}

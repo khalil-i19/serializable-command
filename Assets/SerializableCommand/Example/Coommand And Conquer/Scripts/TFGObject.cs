@@ -1,11 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Policy;
 using Unity.VisualScripting;
 using UnityEngine;
 
 public class TFGObject : MonoBehaviour
 {
-    [SerializeField] protected List<ScriptGraphAsset> actions;
+    public string guid;
+    public string[] tags;
 
-    public List<ScriptGraphAsset> GetActions() => actions;
+    //[SerializeField] protected List<ScriptGraphAsset> actions;
+
+    //public List<ScriptGraphAsset> GetActions() => actions;
 }

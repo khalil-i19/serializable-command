@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
@@ -14,14 +15,15 @@ using UnityEngine.Timeline;
 
 public class TFGTimeline : MonoBehaviour
 {
+    string playableAssetPath = "Assets/SerializableCommand/Example/Coommand And Conquer/Data/PlayableAsset";
+
     [Header("Attention")]
     [Header("This script should only run in runtime/ Play mode")]
     [Space(8f)]
 
     [SerializeField] PlayableDirector playableDirector;
     [SerializeField] TFGSession session;
-
-    [SerializeField, TextArea] string jsonTest;
+    [SerializeField] TFGSessionHistory sessionHistory;
 
     [Header("Communications")]
     [Header("Broadcasters")]
@@ -51,14 +53,10 @@ public class TFGTimeline : MonoBehaviour
     }
 
     #region PLAYBACK
-
-    [ContextMenu("Play")]
     public void Play()
     {
         playableDirector.Play();
     }
-
-    [ContextMenu("Pause")]
 
     public void Pause()
     {
@@ -92,6 +90,61 @@ public class TFGTimeline : MonoBehaviour
     }
     #endregion
 
+    #region JSON
+    public void ImportFromJSON(string json)
+    {
+        if (string.IsNullOrEmpty(json)) return;
+
+        var sessionRecord = JSON.Parse(json);
+
+        playableDirector.ClearAllBindings();
+
+        CreateTimeline();
+
+        //Events
+        int i = 1;
+        foreach (var sessionEvent in sessionRecord["actionRecords"].Children)
+        {
+            var startTime = sessionEvent["time"].AsFloat;
+            var duration = sessionEvent["duration"].AsFloat;
+            var character = TFGCharacterFactory.GetCharacter(sessionEvent["character"].Value);
+            var scriptGraphAsset = session.GetScriptGraphAsset(sessionEvent["action"].Value);
+            var data = sessionEvent["data"].AsObject;
+
+            AddPlayableTrack(character.gameObject, scriptGraphAsset, $"{i}. {character.guid} - {sessionEvent["action"].Value}", startTime, duration, data);
+
+            i++;
+        }
+
+        var timelineAsset = (TimelineAsset)playableDirector.playableAsset;
+        timelineAsset.durationMode = TimelineAsset.DurationMode.FixedLength;
+
+        OnDataLoaded.Broadcast();
+    }
+    #endregion
+
+    List<Vector3> DeserializeKnotsData(string JSONRaw)
+    {
+        List<Vector3> result = new();
+
+        var movementsData = JSON.Parse(JSONRaw).AsArray;
+
+        for (int i = 0; i < movementsData.Count; i++)
+        {
+            var movementData = movementsData[i].AsArray;
+
+            var vector3Data = new Vector3();
+            vector3Data.x = movementData[0].AsFloat;
+            vector3Data.y = movementData[1].AsFloat;
+            vector3Data.z = movementData[2].AsFloat;
+
+            result.Add(vector3Data);
+        }
+
+        return result;
+    }
+    #endregion
+
     #region MODIFICATION
     public void CreateTimeline()
     {
@@ -114,11 +167,12 @@ public class TFGTimeline : MonoBehaviour
         var duration = record.duration;
         var data = record.data;
 
-        var characterId = character.id;
+        //var characterId = character.guid;
+        var characterName = TFGSession.GetCharacter(character.guid).name;
 
         var sessionEventRelativeTime = playableDirector.time;
 
-        AddPlayableTrack(character.gameObject, scriptGraphAsset, $"{characterId} {scriptGraphAsset.name}", sessionEventRelativeTime, duration, data);
+        AddPlayableTrack(character.gameObject, scriptGraphAsset, $"{characterName} {scriptGraphAsset.name}", sessionEventRelativeTime, duration, data);
 
         playableDirector.RebuildGraph();
     }
@@ -174,99 +228,15 @@ public class TFGTimeline : MonoBehaviour
     }
     #endregion
 
-    #region JSON
-    public void ImportFromJSON(string json)
+#if UNITY_EDITOR
+    [ContextMenu("Export PlayableAsset")]
+    private void SavePlayableAsset()
     {
-        if (string.IsNullOrEmpty(json)) return;
+        if (playableDirector.playableAsset == null) return;
 
-        var sessionRecord = JSON.Parse(json);
-
-        if (!DateTime.TryParse(sessionRecord["startTime"].Value, out DateTime startTime)) return;
-        if (!DateTime.TryParse(sessionRecord["endTime"].Value, out DateTime endTime)) return;
-
-        playableDirector.ClearAllBindings();
-
-        CreateTimeline();
-
-        //Initialization
-
-        foreach (var initialTransformData in sessionRecord["initialCharacterTransforms"].Keys)
-        {
-            var character = session.GetCharacter(initialTransformData);
-            var initialCharacterTransformData = sessionRecord["initialCharacterTransforms"][initialTransformData];
-
-            Vector3 worldPos = new Vector3();
-            Vector3 worldRot = new Vector3();
-
-            var worldPositionData = initialCharacterTransformData["worldPosition"].Value;
-            worldPositionData = worldPositionData.GetBetween("(", ")");
-
-            var worldRotationData = initialCharacterTransformData["worldRotation"].Value;
-            worldRotationData = worldRotationData.GetBetween("(", ")");
-
-            var worldPositionValues = worldPositionData.Split(',');
-            worldPos.x = float.Parse(worldPositionValues[0]);
-            worldPos.y = float.Parse(worldPositionValues[1]);
-            worldPos.z = float.Parse(worldPositionValues[2]);
-
-            var worldRotationValues = worldRotationData.Split(',');
-            worldRot.x = float.Parse(worldRotationValues[0]);
-            worldRot.y = float.Parse(worldRotationValues[1]);
-            worldRot.z = float.Parse(worldRotationValues[2]);
-
-            character.transform.position = worldPos;
-            character.transform.rotation = Quaternion.Euler(worldRot);
-        }
-
-        //Events
-        int i = 1;
-        foreach (var sessionEvent in sessionRecord["actionRecords"].Children)
-        {
-            var characterId = sessionEvent["character"].Value;
-            var character = session.GetCharacter(characterId);
-
-            var scriptGraphAsset = session.GetScriptGraphAsset(sessionEvent["action"].Value);
-
-            var sessionEventTime = DateTime.Parse(sessionEvent["time"].Value);
-            var sessionEventRelativeTime = (sessionEventTime - startTime).TotalSeconds;
-
-            var data = sessionEvent["data"].AsObject;
-
-            var duration = sessionEvent["traversalTime"].AsFloat;
-
-            AddPlayableTrack(character.gameObject, scriptGraphAsset, $"{i}. {characterId} {sessionEvent["action"].Value}", sessionEventRelativeTime, duration, data);
-
-            i++;
-        }
-
-        var playbackDuration = (endTime - startTime).TotalSeconds;
-        var timelineAsset = (TimelineAsset)playableDirector.playableAsset;
-        timelineAsset.durationMode = TimelineAsset.DurationMode.FixedLength;
-        timelineAsset.fixedDuration = playbackDuration;
-
-        OnDataLoaded.Broadcast();
+        // Save the asset to the specified path
+        AssetDatabase.CreateAsset(playableDirector.playableAsset, $"{playableAssetPath}/{sessionHistory.sessionData.sessionBase}.playable");
+        AssetDatabase.SaveAssets();
     }
-    #endregion
-
-    List<Vector3> DeserializeKnotsData(string JSONRaw)
-    {
-        List<Vector3> result = new();
-
-        var movementsData = JSON.Parse(JSONRaw).AsArray;
-
-        for (int i = 0; i < movementsData.Count; i++)
-        {
-            var movementData = movementsData[i].AsArray;
-
-            var vector3Data = new Vector3();
-            vector3Data.x = movementData[0].AsFloat;
-            vector3Data.y = movementData[1].AsFloat;
-            vector3Data.z = movementData[2].AsFloat;
-
-            result.Add(vector3Data);
-        }
-
-        return result;
-    }
-    #endregion
+#endif
 }

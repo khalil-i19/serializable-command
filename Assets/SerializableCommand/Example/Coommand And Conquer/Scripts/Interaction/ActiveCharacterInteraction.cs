@@ -11,7 +11,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
-//TODO: Masing2 TFGCharacter harusnya punya script CharacterInteraction; bisa jadi ada lebih dari 1 karakter yang pada satu frame yang sama bisa berinteraksi
+//TODO: Reference name u/ object jgn pake dari GameObject
 public class TFGCharacterInteraction : MonoBehaviour
 {
     [Header("References")]
@@ -79,9 +79,9 @@ public class TFGCharacterInteraction : MonoBehaviour
                     
                     var jsonObject = new JSONObject();
 
-                    jsonObject.Add("target", target.gameObject.name);
+                    jsonObject.Add("target", target.guid);
                     
-                    scriptGraphData.Add("type", typeof(ListWrapper<Vector3>).AssemblyQualifiedName);
+                    scriptGraphData.Add("type", typeof(JSONNode).AssemblyQualifiedName);
                     scriptGraphData.Add("data", jsonObject);
 
                     var actionRecord = new TFGActionRecord();
@@ -96,7 +96,7 @@ public class TFGCharacterInteraction : MonoBehaviour
                 noEvent.callback = null;
 
                 promptContent.title = string.Empty;
-                promptContent.details = $"You will <b>{action.name.ToLower()}</b> {target.transform.parent.name.GetFormattedArticle("{0} <b>{1}</b>")}.\nDo you want to proceed?";
+                promptContent.details = $"You will <b>{action.name.ToLower()}</b> {target.gameObject.name.GetFormattedArticle("{0} <b>{1}</b>")}.\nDo you want to proceed?";
                 promptContent.options = new PromptWindow.PromptButtonEvent[] { yesEvent, noEvent };
 
                 PromptWindow.instance.Show(promptContent);

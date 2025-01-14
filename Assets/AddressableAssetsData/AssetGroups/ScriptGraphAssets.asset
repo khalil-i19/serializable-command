@@ -13,88 +13,95 @@ MonoBehaviour:
   m_Name: ScriptGraphAssets
   m_EditorClassIdentifier: 
   m_GroupName: ScriptGraphAssets
-  m_Data:
-    m_SerializedData: []
   m_GUID: 6dab88fc11353ed4182246a5f6558250
   m_SerializeEntries:
-  - m_GUID: c93538524ba4bf947954b0e1423f56d0
-    m_Address: Assets/SerializableCommand/Example/Coommand And Conquer/VisualScripts/MoveRight.asset
+  - m_GUID: 15784940baee657468b845c6ab3fc076
+    m_Address: Assets/SerializableCommand/Example/Coommand And Conquer/VisualScripts/Templates/BroadcastPositionUpdate.asset
     m_ReadOnly: 0
     m_SerializedLabels:
-    - player-commands
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: a4da3e38f38f2244aa16955db0553309
-    m_Address: Assets/SerializableCommand/Example/Coommand And Conquer/VisualScripts/MoveLeft.asset
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - player-commands
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: e0cf307ab88c75a4ba2126b86e6c9aa0
-    m_Address: Assets/SerializableCommand/Example/Coommand And Conquer/VisualScripts/MoveUp.asset
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - player-commands
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: b11ca4401286ab5478ee52d7fcfead2f
-    m_Address: Assets/SerializableCommand/Example/Coommand And Conquer/VisualScripts/MoveDown.asset
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - player-commands
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: c5563f4caf056d840a792baba1d1cce4
-    m_Address: Assets/SerializableCommand/Example/Coommand And Conquer/VisualScripts/RunDown.asset
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - enemy-commands
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 599569e69f527c440864038a8f6b69ce
-    m_Address: Assets/SerializableCommand/Example/Coommand And Conquer/VisualScripts/RunLeft.asset
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - enemy-commands
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: c245a9be806ffaa43a95dd345bf6ff57
-    m_Address: Assets/SerializableCommand/Example/Coommand And Conquer/VisualScripts/RunRight.asset
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - enemy-commands
+    - scriptGraphAsset
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1fa41240f238a8a42a1896b5acb79fd4
     m_Address: Assets/SerializableCommand/Example/Coommand And Conquer/VisualScripts/RunUp.asset
     m_ReadOnly: 0
     m_SerializedLabels:
-    - enemy-commands
+    - actions
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 15784940baee657468b845c6ab3fc076
-    m_Address: Assets/SerializableCommand/Example/Coommand And Conquer/VisualScripts/Templates/BroadcastPositionUpdate.asset
+  - m_GUID: 3cfc2640e10fd9349bdf03e26f915e37
+    m_Address: Assets/SerializableCommand/Example/Coommand And Conquer/VisualScripts/Player/Rescue.asset
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - actions
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 599569e69f527c440864038a8f6b69ce
+    m_Address: Assets/SerializableCommand/Example/Coommand And Conquer/VisualScripts/RunLeft.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - actions
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6269703f22cf82f458fb5697c3d1988f
+    m_Address: Assets/SerializableCommand/Example/Coommand And Conquer/VisualScripts/Player/ActionB.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - actions
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 72599878711f0bb4ea7d557bbfd76c98
+    m_Address: Assets/SerializableCommand/Example/Coommand And Conquer/VisualScripts/Player/Defuse.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - actions
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a4da3e38f38f2244aa16955db0553309
+    m_Address: Assets/SerializableCommand/Example/Coommand And Conquer/VisualScripts/MoveLeft.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - actions
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: aee59eac8cd3983418956f9bb5b93d04
+    m_Address: Assets/SerializableCommand/Example/Coommand And Conquer/VisualScripts/Player/Take.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - actions
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b11ca4401286ab5478ee52d7fcfead2f
+    m_Address: Assets/SerializableCommand/Example/Coommand And Conquer/VisualScripts/MoveDown.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - actions
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c245a9be806ffaa43a95dd345bf6ff57
+    m_Address: Assets/SerializableCommand/Example/Coommand And Conquer/VisualScripts/RunRight.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - actions
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c5563f4caf056d840a792baba1d1cce4
+    m_Address: Assets/SerializableCommand/Example/Coommand And Conquer/VisualScripts/RunDown.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - actions
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c93538524ba4bf947954b0e1423f56d0
+    m_Address: Assets/SerializableCommand/Example/Coommand And Conquer/VisualScripts/MoveRight.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - actions
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d0c8303c4bcf05d459f1f4115779e567
     m_Address: Assets/SerializableCommand/Example/Coommand And Conquer/VisualScripts/FreestyleMovement.asset
     m_ReadOnly: 0
     m_SerializedLabels:
-    - player-commands
-    - enemy-commands
+    - actions
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 72599878711f0bb4ea7d557bbfd76c98
-    m_Address: Assets/SerializableCommand/Example/Coommand And Conquer/VisualScripts/Player/Defuse.asset
+  - m_GUID: e0cf307ab88c75a4ba2126b86e6c9aa0
+    m_Address: Assets/SerializableCommand/Example/Coommand And Conquer/VisualScripts/MoveUp.asset
     m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: aee59eac8cd3983418956f9bb5b93d04
-    m_Address: Assets/SerializableCommand/Example/Coommand And Conquer/VisualScripts/Player/Take.asset
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 3cfc2640e10fd9349bdf03e26f915e37
-    m_Address: Assets/SerializableCommand/Example/Coommand And Conquer/VisualScripts/Player/Rescue.asset
-    m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - actions
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 28d3940a8e855a741b32c47a8036105b, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: 2f3d60bcc02e1534a99ad267db151484, type: 2}
     - {fileID: 11400000, guid: 39e9bfed8fc590b4aac714a9077174c1, type: 2}
+    - {fileID: 11400000, guid: 2f3d60bcc02e1534a99ad267db151484, type: 2}

@@ -40,8 +40,8 @@ public class TFGCharacterTransformData
 [System.Serializable]
 public class TFGSessionData
 {
-    public string name;
-    public string description;
+    public string guid;
+    public string sessionBase;
     public string startTime;
     public string endTime;
     public List<TFGCharacterTransformData> initialCharacterTransforms = new();
@@ -60,7 +60,7 @@ public class TFGSessionData
             JSONNode.Add("worldPosition", initialCharacterTransform.worldPosition.ToString());
             JSONNode.Add("worldRotation", initialCharacterTransform.worldRotation.ToString());
 
-            JSONArray.Add(initialCharacterTransform.character.id, JSONNode);
+            JSONArray.Add(initialCharacterTransform.character.guid, JSONNode);
         }
 
         result = JSONArray.ToString();
@@ -79,7 +79,7 @@ public class TFGSessionData
             var JSONNode = new JSONObject();
 
             JSONNode.Add("time", actionRecord.time);
-            JSONNode.Add("character", actionRecord.character.id);
+            JSONNode.Add("character", actionRecord.character.guid);
             JSONNode.Add("action", actionRecord.action.name);
             JSONNode.Add("duration", actionRecord.duration);
             JSONNode.Add("data", actionRecord.data);

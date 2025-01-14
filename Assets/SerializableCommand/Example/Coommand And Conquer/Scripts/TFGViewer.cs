@@ -48,16 +48,16 @@ public class TFGUI : MonoBehaviour, IInitializable
 
         currentCharacterActionButtons.Clear();
 
-        foreach (var action in character.GetActions())
-        {
-            var currentCharacterActionButton = currentCharacterActionButtons.Instantiate(currentCharacterActionButtonsContainer);
+        //foreach (var action in character.GetActions())
+        //{
+        //    var currentCharacterActionButton = currentCharacterActionButtons.Instantiate(currentCharacterActionButtonsContainer);
 
-            var button = currentCharacterActionButton.Get<Button>("button");
-            var buttonText = currentCharacterActionButton.Get<TextMeshProUGUI>("button-text");
+        //    var button = currentCharacterActionButton.Get<Button>("button");
+        //    var buttonText = currentCharacterActionButton.Get<TextMeshProUGUI>("button-text");
 
-            buttonText.text = action.name.InsertSpace();
-            button.onClick.RemoveAllListeners();
-            button.onClick.AddListener(() => { character.RunCommand(action); });
-        }
+        //    buttonText.text = action.name.InsertSpace();
+        //    button.onClick.RemoveAllListeners();
+        //    button.onClick.AddListener(() => { character.RunCommand(action); });
+        //}
     }
 }

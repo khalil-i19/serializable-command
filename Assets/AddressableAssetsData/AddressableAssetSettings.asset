@@ -102,6 +102,8 @@ MonoBehaviour:
     - default
     - player-commands
     - enemy-commands
+    - actions
+    - scriptGraphAsset
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 4889b0ff674751b4cbb8da73f5bd17ba, type: 2}
